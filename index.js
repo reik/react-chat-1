@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+const shortid = require('shortid');
 
 const port = process.env.PORT || 3000;
 
@@ -19,7 +20,15 @@ http.listen(port, function() {
 var users = [];
 var messages = [];
 
-io.on('connection', function(socket){
+io.on('connection', function(client){
+  var newUser = {
+    id: client.id,
+    username: "user_" + shortid.generate()
+  }
+  
+  users.push(newUser);
+
   console.log('a user connected');
-  socket.emit("init");
+  console.log(newUser);
+  client.emit("init");
 });

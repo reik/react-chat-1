@@ -7,19 +7,38 @@ export default class ChatMain extends React.Component {
     super(props);
 
     this.state = {
-      users: [], messages: []
+      users: [], 
+      messages: [{
+        id: 1,
+        user: 'Make',
+        msg: 'Hei maailma!'
+      },
+      {
+        id: 2,
+        user: 'Jake',
+        msg: 'Hello world!'
+      }]
     }
   }
 
   componentDidMount() {
-    socket.on('init', function() { alert("KEK!"); });
+    socket.on('init', function() { });
   }
 
   render() {
     return (
       <div className="main">
-        <Users />
-        <Messages />
+        <div className="header">
+          Kek
+        </div>
+        <div className="twopanels">
+          <div className="userspanel">
+            <Users />
+          </div>
+          <div className="messagepanel">
+            <Messages messages={this.state.messages} />
+          </div>
+        </div>
       </div>
     );
   }
