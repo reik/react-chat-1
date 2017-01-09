@@ -22610,7 +22610,7 @@
   \***************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -22633,19 +22633,42 @@
 	var MessageForm = function (_React$Component) {
 	  _inherits(MessageForm, _React$Component);
 	
-	  function MessageForm() {
+	  function MessageForm(props) {
 	    _classCallCheck(this, MessageForm);
 	
-	    return _possibleConstructorReturn(this, (MessageForm.__proto__ || Object.getPrototypeOf(MessageForm)).apply(this, arguments));
+	    var _this = _possibleConstructorReturn(this, (MessageForm.__proto__ || Object.getPrototypeOf(MessageForm)).call(this, props));
+	
+	    _this.state = { value: '' };
+	
+	    _this.handleSubmit = _this.handleSubmit.bind(_this);
+	    _this.handleChange = _this.handleChange.bind(_this);
+	    return _this;
 	  }
 	
 	  _createClass(MessageForm, [{
-	    key: "render",
+	    key: 'handleChange',
+	    value: function handleChange(e) {
+	      this.setState({ value: e.target.value });
+	    }
+	  }, {
+	    key: 'handleSubmit',
+	    value: function handleSubmit(e) {
+	      alert('Message: ' + this.state.value);
+	      this.setState({ value: '' });
+	
+	      e.preventDefault();
+	    }
+	  }, {
+	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
-	        "div",
-	        { className: "messageForm" },
-	        "MEM"
+	        'div',
+	        { className: 'messageForm' },
+	        _react2.default.createElement(
+	          'form',
+	          { onSubmit: this.handleSubmit },
+	          _react2.default.createElement('input', { value: this.state.value, onChange: this.handleChange })
+	        )
 	      );
 	    }
 	  }]);
