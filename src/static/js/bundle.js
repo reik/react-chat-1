@@ -22357,6 +22357,10 @@
 	
 	var _Messages2 = _interopRequireDefault(_Messages);
 	
+	var _MessageForm = __webpack_require__(/*! ./MessageForm */ 189);
+	
+	var _MessageForm2 = _interopRequireDefault(_MessageForm);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22409,13 +22413,14 @@
 	          { className: 'twopanels' },
 	          _react2.default.createElement(
 	            'div',
-	            { className: 'userspanel' },
+	            { className: 'sidepanel' },
 	            _react2.default.createElement(_Users2.default, null)
 	          ),
 	          _react2.default.createElement(
 	            'div',
-	            { className: 'messagepanel' },
-	            _react2.default.createElement(_Messages2.default, { messages: this.state.messages })
+	            { className: 'chatpanel' },
+	            _react2.default.createElement(_Messages2.default, { messages: this.state.messages }),
+	            _react2.default.createElement(_MessageForm2.default, null)
 	          )
 	        )
 	      );
@@ -22479,11 +22484,7 @@
 	          'ul',
 	          null,
 	          this.props.messages.map(function (message) {
-	            return _react2.default.createElement(
-	              'li',
-	              { className: 'message', key: message.id },
-	              _react2.default.createElement(_Message2.default, { user: message.user, msg: message.msg })
-	            );
+	            return _react2.default.createElement(_Message2.default, { key: message.id, user: message.user, msg: message.msg });
 	          })
 	        )
 	      );
@@ -22587,7 +22588,7 @@
 	    key: "render",
 	    value: function render() {
 	      return _react2.default.createElement(
-	        "div",
+	        "li",
 	        { className: "message" },
 	        "<",
 	        this.props.user,
@@ -22601,6 +22602,58 @@
 	}(_react2.default.Component);
 	
 	exports.default = Message;
+
+/***/ },
+/* 189 */
+/*!***************************************!*\
+  !*** ./src/components/MessageForm.js ***!
+  \***************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(/*! react */ 1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var MessageForm = function (_React$Component) {
+	  _inherits(MessageForm, _React$Component);
+	
+	  function MessageForm() {
+	    _classCallCheck(this, MessageForm);
+	
+	    return _possibleConstructorReturn(this, (MessageForm.__proto__ || Object.getPrototypeOf(MessageForm)).apply(this, arguments));
+	  }
+	
+	  _createClass(MessageForm, [{
+	    key: "render",
+	    value: function render() {
+	      return _react2.default.createElement(
+	        "div",
+	        { className: "messageForm" },
+	        "MEM"
+	      );
+	    }
+	  }]);
+	
+	  return MessageForm;
+	}(_react2.default.Component);
+	
+	exports.default = MessageForm;
 
 /***/ }
 /******/ ]);

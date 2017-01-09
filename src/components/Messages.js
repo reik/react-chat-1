@@ -8,9 +8,7 @@ export default class Messages extends React.Component {
         <ul>
           {
             this.props.messages.map((message) => 
-              <li className="message" key={message.id}>
-                <Message user={message.user} msg={message.msg} />
-              </li>
+              <Message key={message.id} user={message.user} msg={message.msg} />
             )
           }
         </ul>

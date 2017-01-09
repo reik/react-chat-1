@@ -17,12 +17,12 @@ body {
     display: flex;
 }
 
-.userspanel {
+.sidepanel {
     background: #FF0000;
     flex: 0 0 20%;
 }
 
-.messagepanel {
+.chatpanel {
     background: #00FF00;
     flex: 1;
 }
@@ -31,7 +31,24 @@ body {
     position: absolute;
     top: 0px;
     bottom: 2.5em;
-    width: 100%;
+    width: 80%;
     background: #FFFF00;
 }
 
+.messages ul {
+    margin: 0;
+    padding: 0;
+}
+
+.message {
+    list-style: none;
+    background: #66FFFF;
+}
+
+.messageForm {
+    position: absolute;
+    bottom: 0px;
+    height: 2.5em;
+    width: 80%;
+    background: #00FFFF;
+}

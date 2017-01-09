@@ -1,6 +1,7 @@
 import React from 'react';
 import Users from './Users';
 import Messages from './Messages';
+import MessageForm from './MessageForm';
 
 export default class ChatMain extends React.Component {
   constructor(props) {
@@ -32,11 +33,12 @@ export default class ChatMain extends React.Component {
           Kek
         </div>
         <div className="twopanels">
-          <div className="userspanel">
+          <div className="sidepanel">
             <Users />
           </div>
-          <div className="messagepanel">
+          <div className="chatpanel">
             <Messages messages={this.state.messages} />
+            <MessageForm />
           </div>
         </div>
       </div>
