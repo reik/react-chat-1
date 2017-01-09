@@ -1,0 +1,17 @@
+body {    
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.userpanel {
+    width: 20%;
+    height: 100%;
+    background: #FF0000;
+}
+
+.messagepanel {
+    width: 80%;
+    height: 100%;
+    background: #00FF00;
+}
+
