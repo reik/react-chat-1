@@ -4,29 +4,23 @@ body {
 
     font-family: Courier New, Courier, monospace;
     font-size: 16px;
-}
-
-.header {
-    width: 100%;
-    height: 2.5em;
-    background: #0000FF;
+    color: #F0F0F0;
 }
 
 .twopanels {
     position: absolute;
-    top: 2.5em;
+    top: 0px;
     bottom: 0px;
     width: 100%;
     display: flex;
 }
 
 .sidepanel {
-    background: #FF0000;
+    background: #19191A;
     flex: 0 0 20%;
 }
 
 .chatpanel {
-    background: #00FF00;
     flex: 1;
 }
 
@@ -35,7 +29,9 @@ body {
     top: 0px;
     bottom: 2em;
     width: 80%;
-    background: #FFFF00;
+    overflow: auto;
+    text-align: bottom;
+    background: #111111;
 }
 
 .messages ul {
@@ -43,10 +39,13 @@ body {
     padding: 0;
 }
 
+.messagelist li:nth-child(even) {
+    background: #181818;
+}
+
 .message {
     list-style: none;
     padding: 4px;
-    background: #66FFFF;
 }
 
 .messageForm {
@@ -54,7 +53,6 @@ body {
     bottom: 0px;
     height: 2em;
     width: 80%;
-    background: #00FFFF;
 }
 
 .messageForm span {
@@ -67,6 +65,10 @@ body {
     -moz-box-sizing: border-box;    
     box-sizing: border-box; 
 
+    color: #F0F0F0;
+    border: 0;
+    background: #2D2D2D;
     width: 100%;
     font-size: 1.4em;
+    padding: 3px;
 }

@@ -15,7 +15,7 @@ export default class MessageForm extends React.Component {
   }
 
   handleSubmit(e) {
-    alert('Message: ' + this.state.value);
+    this.props.handleSubmit(this.state.value);
     this.setState({ value: '' });
 
     e.preventDefault();

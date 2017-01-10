@@ -18,27 +18,38 @@ export default class ChatMain extends React.Component {
         id: 2,
         user: 'Jake',
         msg: 'Hello world!'
-      }]
+      }],
+      keycount: 3
     }
+    
+    this.handleMessageField = this.handleMessageField.bind(this);
   }
 
   componentDidMount() {
     socket.on('init', function() { });
   }
 
+  handleMessageField(value) {
+    this.setState( (state) => ({ messages: state.messages.concat({
+        id: this.state.keycount,
+        user: 'kek',
+        msg: value
+      }) 
+    }));
+
+    this.setState({ keycount: this.state.keycount + 1 });
+  }
+
   render() {
     return (
       <div className="main">
-        <div className="header">
-          Kek
-        </div>
         <div className="twopanels">
           <div className="sidepanel">
             <Users />
           </div>
           <div className="chatpanel">
             <Messages messages={this.state.messages} />
-            <MessageForm />
+            <MessageForm handleSubmit={this.handleMessageField} />
           </div>
         </div>
       </div>

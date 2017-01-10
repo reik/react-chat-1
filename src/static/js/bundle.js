@@ -22387,8 +22387,11 @@
 	        id: 2,
 	        user: 'Jake',
 	        msg: 'Hello world!'
-	      }]
+	      }],
+	      keycount: 3
 	    };
+	
+	    _this.handleMessageField = _this.handleMessageField.bind(_this);
 	    return _this;
 	  }
 	
@@ -22398,16 +22401,27 @@
 	      socket.on('init', function () {});
 	    }
 	  }, {
+	    key: 'handleMessageField',
+	    value: function handleMessageField(value) {
+	      var _this2 = this;
+	
+	      this.setState(function (state) {
+	        return { messages: state.messages.concat({
+	            id: _this2.state.keycount,
+	            user: 'kek',
+	            msg: value
+	          })
+	        };
+	      });
+	
+	      this.setState({ keycount: this.state.keycount + 1 });
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'main' },
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'header' },
-	          'Kek'
-	        ),
 	        _react2.default.createElement(
 	          'div',
 	          { className: 'twopanels' },
@@ -22420,7 +22434,7 @@
 	            'div',
 	            { className: 'chatpanel' },
 	            _react2.default.createElement(_Messages2.default, { messages: this.state.messages }),
-	            _react2.default.createElement(_MessageForm2.default, null)
+	            _react2.default.createElement(_MessageForm2.default, { handleSubmit: this.handleMessageField })
 	          )
 	        )
 	      );
@@ -22482,7 +22496,7 @@
 	        { className: 'messages' },
 	        _react2.default.createElement(
 	          'ul',
-	          null,
+	          { className: 'messagelist' },
 	          this.props.messages.map(function (message) {
 	            return _react2.default.createElement(_Message2.default, { key: message.id, user: message.user, msg: message.msg });
 	          })
@@ -22653,7 +22667,7 @@
 	  }, {
 	    key: 'handleSubmit',
 	    value: function handleSubmit(e) {
-	      alert('Message: ' + this.state.value);
+	      this.props.handleSubmit(this.state.value);
 	      this.setState({ value: '' });
 	
 	      e.preventDefault();
