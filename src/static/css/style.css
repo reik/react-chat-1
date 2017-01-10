@@ -45,7 +45,7 @@ body {
 
 .message {
     list-style: none;
-    padding: 4px;
+    padding: 6px;
 }
 
 .messageForm {
@@ -71,4 +71,8 @@ body {
     width: 100%;
     font-size: 1.4em;
     padding: 3px;
+}
+
+.users {
+
 }

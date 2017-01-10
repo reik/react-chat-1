@@ -36,7 +36,7 @@ export default class ChatMain extends React.Component {
         msg: value
       }) 
     }));
-
+    
     this.setState({ keycount: this.state.keycount + 1 });
   }
 
