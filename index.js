@@ -105,10 +105,23 @@ io.on('connection', function(client){
 
     //it's command!
     if (data.msg.charAt(0) == '/') {
-      client.emit('new-message', message({
-        type: 0,
-        msg: ['HELLO!', 'KEK!', 'HAHAH!']
-      }));
+      var split = data.msg.split(' ');
+      var command = split[0].substring(1);
+
+      if (command == 'join') {
+        if (split.length < 2 || split[1].charAt(0) != '#') {
+          client.emit('new-message', message({
+            type: 0,
+            msg: ['Wrong syntax! Usage: /join #channel']
+          }));
+        }else {
+          var channelID = getChannel(split[1]);
+
+          client.emit('channel-join', )
+        }
+      }
+
+      /**/
 
     }else {
       if (data.channel != 0) {
@@ -132,6 +145,26 @@ function message(data) {
   data['id'] = messageCounter;
   messageCounter = messageCounter + 1;
   return data;
+}
+
+function getChannel(name) {
+  Object.keys(channels).forEach(function(key) {
+    var channelName = channels[key].name;
+
+    if (channelName.toLowerCase() == name.toLowerCase()) {
+      return key;
+    }
+  });
+
+  var newChannel = {
+    name: name
+  }
+
+  channels[channelCounter] = newChannel;
+
+  channelCounter++;
+
+  return channelCounter-1;
 }
 
 /*

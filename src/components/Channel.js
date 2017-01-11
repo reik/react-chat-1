@@ -8,7 +8,7 @@ export default class Channel extends React.Component {
   }
 
   handleClick(e) {
-    alert("KEK!");
+    this.props.changeChannel(this.props.channelID);
     e.preventDefault();
   }
 

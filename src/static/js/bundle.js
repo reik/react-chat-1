@@ -22393,8 +22393,7 @@
 	      users: {},
 	      channels: [{
 	        id: 0,
-	        name: 'Status window',
-	        users: null
+	        name: 'Status window'
 	      }],
 	      messages: {
 	        0: []
@@ -22405,6 +22404,7 @@
 	
 	    _this.handleMessageField = _this.handleMessageField.bind(_this);
 	    _this.handleIncomingMessage = _this.handleIncomingMessage.bind(_this);
+	    _this.changeChannel = _this.changeChannel.bind(_this);
 	    return _this;
 	  }
 	
@@ -22452,6 +22452,11 @@
 	      }
 	    }
 	  }, {
+	    key: 'changeChannel',
+	    value: function changeChannel(value) {
+	      this.setState({ currentChannel: value });
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
@@ -22467,14 +22472,14 @@
 	              'div',
 	              { className: 'sidepanel_content' },
 	              _react2.default.createElement(_Header2.default, null),
-	              _react2.default.createElement(_Channels2.default, { channels: this.state.channels }),
+	              _react2.default.createElement(_Channels2.default, { channels: this.state.channels, changeChannel: this.changeChannel }),
 	              _react2.default.createElement(_Users2.default, { users: this.state.users })
 	            )
 	          ),
 	          _react2.default.createElement(
 	            'div',
 	            { className: 'chatpanel' },
-	            _react2.default.createElement(_Messages2.default, { messages: this.state.messages[this.state.currentChannel] }),
+	            _react2.default.createElement(_Messages2.default, { messages: this.state.messages[this.state.currentChannel], users: this.state.users }),
 	            _react2.default.createElement(_MessageForm2.default, { handleSubmit: this.handleMessageField })
 	          )
 	        )
@@ -23178,6 +23183,8 @@
 	  _createClass(Channels, [{
 	    key: 'render',
 	    value: function render() {
+	      var _this2 = this;
+	
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'channels' },
@@ -23190,7 +23197,7 @@
 	          'ul',
 	          { className: 'channellist' },
 	          this.props.channels.map(function (channel) {
-	            return _react2.default.createElement(_Channel2.default, { key: channel.id, name: channel.name });
+	            return _react2.default.createElement(_Channel2.default, { key: channel.id, channelID: channel.id, changeChannel: _this2.props.changeChannel, name: channel.name });
 	          })
 	        )
 	      );
@@ -23244,7 +23251,7 @@
 	  _createClass(Channel, [{
 	    key: "handleClick",
 	    value: function handleClick(e) {
-	      alert("KEK!");
+	      this.props.changeChannel(this.props.channelID);
 	      e.preventDefault();
 	    }
 	  }, {

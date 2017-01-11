@@ -15,8 +15,7 @@ export default class ChatMain extends React.Component {
       users: {},
       channels: [{
         id: 0,
-        name: 'Status window',
-        users: null
+        name: 'Status window'
       }], 
       messages: {
         0: []
@@ -27,6 +26,7 @@ export default class ChatMain extends React.Component {
     
     this.handleMessageField = this.handleMessageField.bind(this);
     this.handleIncomingMessage = this.handleIncomingMessage.bind(this);
+    this.changeChannel = this.changeChannel.bind(this);
   }
 
   componentDidMount() {
@@ -61,6 +61,10 @@ export default class ChatMain extends React.Component {
     }
   }
 
+  changeChannel(value) {
+    this.setState({ currentChannel: value });
+  }
+
   render() {
     return (
       <div className="main">
@@ -68,12 +72,12 @@ export default class ChatMain extends React.Component {
           <div className="sidepanel">
             <div className="sidepanel_content">
               <Header />
-              <Channels channels={this.state.channels} />
+              <Channels channels={this.state.channels} changeChannel={this.changeChannel} />
               <Users users={this.state.users}/>
             </div>
           </div>
           <div className="chatpanel">
-            <Messages messages={this.state.messages[this.state.currentChannel]} />
+            <Messages messages={this.state.messages[this.state.currentChannel]} users={this.state.users} />
             <MessageForm handleSubmit={this.handleMessageField} />
           </div>
         </div>
