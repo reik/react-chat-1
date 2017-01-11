@@ -22420,8 +22420,8 @@
 	          msg: 'Hello world!'
 	        }]
 	      },
-	      keycount: 3,
-	      currentChannel: 0
+	      currentChannel: 0,
+	      requestingNickname: false
 	    };
 	
 	    _this.handleMessageField = _this.handleMessageField.bind(_this);
@@ -22432,7 +22432,15 @@
 	  _createClass(ChatMain, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
+	      var _this2 = this;
+	
 	      socket.on('new-message', this.handleIncomingMessage);
+	      socket.on('request-nickname', function () {
+	        _this2.setState({ requestingNickname: true });
+	      });
+	      socket.on('nickname-ok', function () {
+	        _this2.setState({ requestingNickname: false });
+	      });
 	    }
 	  }, {
 	    key: 'handleIncomingMessage',
@@ -22447,24 +22455,13 @@
 	
 	        this.setState({ messages: (0, _immutabilityHelper2.default)(this.state.messages, { 0: { $push: [newMessage] } }) });
 	      }
-	
-	      console.log(this.state.messages);
 	    }
 	  }, {
 	    key: 'handleMessageField',
 	    value: function handleMessageField(value) {
-	      var _this2 = this;
-	
-	      this.setState(function (state) {
-	        return { messages: state.messages.concat({
-	            id: _this2.state.keycount,
-	            user: 'kek',
-	            msg: value
-	          })
-	        };
-	      });
-	
-	      this.setState({ keycount: this.state.keycount + 1 });
+	      if (this.state.requestingNickname) {
+	        socket.emit('set-nickname', value);
+	      }
 	    }
 	  }, {
 	    key: 'render',
@@ -22877,9 +22874,6 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	
-	      console.log(this.props.messages);
-	
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'messages' },

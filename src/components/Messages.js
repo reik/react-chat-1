@@ -19,9 +19,6 @@ export default class Messages extends React.Component {
   }
 
   render() {
-    
-    console.log(this.props.messages);
-  
     return (
       <div className="messages">
         <ul className="messagelist">

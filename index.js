@@ -39,7 +39,7 @@ io.on('connection', function(client){
   
   users[client.id] = newUser;
 
-  console.log('-!- client (ID: '+ client.id +') connected, requesting username');
+  console.log('-!- client (ID: '+ client.id +') connected, requesting nickname');
 
   //welcome the user and tell him what's up
   client.emit("new-message", message({
@@ -48,13 +48,50 @@ io.on('connection', function(client){
   }));
 
   //send username request
-  client.emit("request-username");
+  client.emit("request-nickname");
+
+  /*
+   *
+   * Sockets coming from clients
+   * 
+   */
+
+  client.on('set-nickname', function(data) {
+    var usernameRegex = /^[a-zA-Z0-9_]+$/;
+    
+    /*
+     
+     !!!!!! TODO: DON'T ALLOW DUPLICATE OR TOO LONG NICKNAMES !!!!!!!!
+
+     */
+    
+    //check if username is valid 
+    if (data.match(usernameRegex)) {
+      users[client.id].nick = data;
+
+      console.log("-!- client (ID: " + client.id + ") changed nickname to " + data);
+
+      client.emit("new-message", message({
+        type: 0,
+        msg: ['You\'re now known as ' + data, 'You may now start chatting. If you\'re new here, type /help to get started.']
+      }));
+
+      client.emit("nickname-ok");
+    }else {
+      console.log("-!- client (ID: " + client.id + ") requested invalid nickname " + data)
+
+      client.emit("new-message", message({
+        type: 0,
+        msg: ['Invalid nickname. Allowed characters: a-z, A-Z and _']
+      }));
+    }
+  });
+
 });
 
 function message(data) {
   data['id'] = messageCounter;
   messageCounter = messageCounter + 1;
-  console.log(data);
   return data;
 }
 

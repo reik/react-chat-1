@@ -45,8 +45,8 @@ export default class ChatMain extends React.Component {
           msg: 'Hello world!'
         }]
       },
-      keycount: 3,
-      currentChannel: 0
+      currentChannel: 0,
+      requestingNickname: false
     }
     
     this.handleMessageField = this.handleMessageField.bind(this);
@@ -55,6 +55,8 @@ export default class ChatMain extends React.Component {
 
   componentDidMount() {
     socket.on('new-message', this.handleIncomingMessage);
+    socket.on('request-nickname', () => { this.setState({ requestingNickname: true }) });
+    socket.on('nickname-ok', () => { this.setState({ requestingNickname: false }) });
   }
 
   handleIncomingMessage(data) {
@@ -68,19 +70,12 @@ export default class ChatMain extends React.Component {
 
       this.setState({ messages: update(this.state.messages, {0: {$push: [newMessage]}}) });
     }
-
-    console.log(this.state.messages);
   }
 
   handleMessageField(value) {
-    this.setState( (state) => ({ messages: state.messages.concat({
-        id: this.state.keycount,
-        user: 'kek',
-        msg: value
-      }) 
-    }));
-
-    this.setState({ keycount: this.state.keycount + 1 });
+    if (this.state.requestingNickname) {
+      socket.emit('set-nickname', value);
+    }
   }
 
   render() {
