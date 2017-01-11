@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class ServerMessage extends React.Component {
+export default class StatusMessage extends React.Component {
   render() {
     return (
       <li className="message">

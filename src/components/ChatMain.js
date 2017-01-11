@@ -21,12 +21,15 @@ export default class ChatMain extends React.Component {
         0: []
       },
       currentChannel: 0,
-      requestingNickname: false
+      requestingNickname: false,
+      statusMessageIDCounter: 0
     }
     
     this.handleMessageField = this.handleMessageField.bind(this);
     this.handleIncomingMessage = this.handleIncomingMessage.bind(this);
     this.changeChannel = this.changeChannel.bind(this);
+    this.handleChannelJoin = this.handleChannelJoin.bind(this);
+    this.addStatusMessage = this.addStatusMessage.bind(this);
   }
 
   componentDidMount() {
@@ -34,19 +37,37 @@ export default class ChatMain extends React.Component {
     socket.on('request-nickname', () => { this.setState({ requestingNickname: true }) });
     socket.on('nickname-ok', () => { this.setState({ requestingNickname: false }) });
     socket.on('update-users', (data) => { this.setState({ users: data }) });
+    socket.on('channel-join', this.handleChannelJoin);
   }
 
   handleIncomingMessage(data) {
-    //server message
+    //status message from server
     if (data.type == 0) {
-      var newMessage = {
-        type: 0,
-        id: data.id,
-        msg: data.msg
-      };
-
-      this.setState({ messages: update(this.state.messages, {0: {$push: [newMessage]}}) });
+      if (Array.isArray(data.msg)) {
+        data.msg.forEach((singleMsg) => {
+          this.addStatusMessage(singleMsg, 0);
+        });
+      }else {
+        this.addStatusMessage(data.msg, 0);
+      }
     }
+  }
+
+  addStatusMessage(msg, channel) {
+    var message = {
+      type: 0,
+      id: 'status-' + this.state.statusMessageIDCounter,
+      msg: msg
+    };
+
+    console.log(message);
+
+    this.setState({ statusMessageIDCounter: this.state.statusMessageIDCounter + 1 });
+
+    var messages = this.state.messages;
+    messages[channel].push(message);
+
+    this.setState({ messages: messages });
   }
 
   handleMessageField(value) {
@@ -63,6 +84,17 @@ export default class ChatMain extends React.Component {
 
   changeChannel(value) {
     this.setState({ currentChannel: value });
+  }
+
+  handleChannelJoin(data) {
+    this.setState({ channels: update(this.state.channels, {$push: [data]}) });
+
+    var currentMessages = this.state.messages;
+    currentMessages[data.id] = [];
+
+    this.addStatusMessage('Welcome to channel!', data.id);
+
+    this.setState({ messages: currentMessages, currentChannel: data.id });
   }
 
   render() {

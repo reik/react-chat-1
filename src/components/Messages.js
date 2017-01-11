@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Message from './Message';
-import ServerMessage from './ServerMessage';
+import StatusMessage from './StatusMessage';
 
 
 export default class Messages extends React.Component {
@@ -25,7 +25,7 @@ export default class Messages extends React.Component {
           {
             this.props.messages.map((message) => {
               if (message.type == 0) {
-                return message.msg.map((msg, i) => <ServerMessage key={message.id + '#' + i} msg={msg} />);
+                return <StatusMessage key={message.id} msg={message.msg} />;
               }else {
                 return <Message key={message.id} user={message.user} msg={message.msg} />;
               }

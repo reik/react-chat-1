@@ -52,7 +52,7 @@ io.on('connection', function(client){
   client.emit('new-message', message({
     type: 0,
     msg: ['Connected to server', 'Welcome! Who are you? Please enter a nickname :-)']
-  }));
+  }, true));
 
   //send username request
   client.emit('request-nickname');
@@ -81,7 +81,7 @@ io.on('connection', function(client){
       client.emit('new-message', message({
         type: 0,
         msg: ['You\'re now known as ' + data, 'You may now start chatting. If you\'re new here, type /help to get started.']
-      }));
+      }, true));
 
       client.emit('nickname-ok');
       
@@ -92,7 +92,7 @@ io.on('connection', function(client){
       client.emit('new-message', message({
         type: 0,
         msg: ['Invalid nickname. Allowed characters: a-z, A-Z and _']
-      }));
+      }, true));
     }
   });
 
@@ -113,16 +113,21 @@ io.on('connection', function(client){
           client.emit('new-message', message({
             type: 0,
             msg: ['Wrong syntax! Usage: /join #channel']
-          }));
+          }, true));
         }else {
           var channelID = getChannel(split[1]);
 
-          client.emit('channel-join', )
+          client.emit('channel-join', {
+            id: channelID,
+            name: channels[channelID].name
+          });
         }
+      }else {
+        client.emit('new-message', message({
+          type: 0,
+          msg: ['Unknown command: ' + command]
+        }, true));
       }
-
-      /**/
-
     }else {
       if (data.channel != 0) {
 
@@ -141,12 +146,16 @@ io.on('connection', function(client){
 
 });
 
-function message(data) {
-  data['id'] = messageCounter;
-  messageCounter = messageCounter + 1;
+//helper function for messages
+function message(data, isServerMessage) {
+  if (!isServerMessage) {
+    data['id'] = messageCounter;
+    messageCounter = messageCounter + 1;
+  }
   return data;
 }
 
+//helper function for finding channels with name
 function getChannel(name) {
   Object.keys(channels).forEach(function(key) {
     var channelName = channels[key].name;
@@ -177,10 +186,9 @@ MESSAGE FORMAT
   msg: 'Hei maailma!'
 }
 
-SERVERMSG (type = 0)
+SERVERMSG (type = 0) <-- NO ID NEEDED, ID IS CLIENTSIDE IN SERVER MESSAGES
 
 {
-  id: 1,
   type: 0,
   msg: ['kek', 'bur']
 }
