@@ -22408,6 +22408,7 @@
 	    _this.changeChannel = _this.changeChannel.bind(_this);
 	    _this.handleChannelJoin = _this.handleChannelJoin.bind(_this);
 	    _this.addStatusMessage = _this.addStatusMessage.bind(_this);
+	    _this.handleDisconnect = _this.handleDisconnect.bind(_this);
 	    return _this;
 	  }
 	
@@ -22427,6 +22428,7 @@
 	        _this2.setState({ users: data });
 	      });
 	      socket.on('channel-join', this.handleChannelJoin);
+	      socket.on('disconnect', this.handleDisconnect);
 	    }
 	  }, {
 	    key: 'handleIncomingMessage',
@@ -22443,6 +22445,24 @@
 	          this.addStatusMessage(data.msg, 0);
 	        }
 	      }
+	    }
+	  }, {
+	    key: 'handleDisconnect',
+	    value: function handleDisconnect() {
+	      var onlyStatusMessages = this.state.messages[0];
+	
+	      this.setState({ channels: [{
+	          id: 0,
+	          name: 'Status window'
+	        }],
+	        messages: {
+	          0: onlyStatusMessages
+	        },
+	        users: {},
+	        currentChannel: 0
+	      });
+	
+	      this.addStatusMessage('Disconnected from server', 0);
 	    }
 	  }, {
 	    key: 'addStatusMessage',

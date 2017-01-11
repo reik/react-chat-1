@@ -171,6 +171,8 @@ function getChannel(name) {
 
   channels[channelCounter] = newChannel;
 
+  console.log('-!- New channel: ' + name + ' (ID: ' + channelCounter + ')');
+
   channelCounter++;
 
   return channelCounter-1;
