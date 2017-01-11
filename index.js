@@ -117,10 +117,14 @@ io.on('connection', function(client){
         }else {
           var channelID = getChannel(split[1]);
 
+          //Tell channel id and name to user
           client.emit('channel-join', {
             id: channelID,
             name: channels[channelID].name
           });
+
+          //Add user to the channel room (socket.io)
+          client.join('channel-' + channelID);
         }
       }else {
         client.emit('new-message', message({
@@ -130,9 +134,11 @@ io.on('connection', function(client){
       }
     }else {
       if (data.channel != 0) {
-
-      }else {
-
+        io.to('channel-' + data.channel).emit('new-message', message({
+          type: 1,
+          msg: data.msg,
+          channel: data.channel
+        }));
       }
     }
 
@@ -157,25 +163,31 @@ function message(data, isServerMessage) {
 
 //helper function for finding channels with name
 function getChannel(name) {
+  var channelID = null;
+
   Object.keys(channels).forEach(function(key) {
     var channelName = channels[key].name;
 
     if (channelName.toLowerCase() == name.toLowerCase()) {
-      return key;
+      channelID = key;
     }
   });
 
-  var newChannel = {
-    name: name
+  if (channelID != null) {
+    return channelID;
+  }else {
+    var newChannel = {
+      name: name
+    }
+
+    channels[channelCounter] = newChannel;
+
+    console.log('-!- New channel: ' + name + ' (ID: ' + channelCounter + ')');
+
+    channelCounter++;
+
+    return channelCounter-1;
   }
-
-  channels[channelCounter] = newChannel;
-
-  console.log('-!- New channel: ' + name + ' (ID: ' + channelCounter + ')');
-
-  channelCounter++;
-
-  return channelCounter-1;
 }
 
 /*

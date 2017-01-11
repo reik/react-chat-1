@@ -52,6 +52,8 @@ export default class ChatMain extends React.Component {
       }else {
         this.addStatusMessage(data.msg, 0);
       }
+    }else if (data.type == 1) {
+      console.log(data);
     }
   }
 
