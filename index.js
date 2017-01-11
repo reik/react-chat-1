@@ -19,7 +19,7 @@ app.get('/', function response(req, res) {
 });
 
 http.listen(port, function() {
-    console.log("Listening on *:" + port);
+    console.log('Listening on *:' + port);
 });
 
 /*
@@ -29,7 +29,14 @@ http.listen(port, function() {
  */
 
 var users = {};
+var channels = {
+  0: {
+    name: 'Status window'
+  }
+}
+
 var messageCounter = 0;
+var channelCounter = 1;
 
 io.on('connection', function(client){
   var newUser = {
@@ -42,13 +49,13 @@ io.on('connection', function(client){
   console.log('-!- client (ID: '+ client.id +') connected, requesting nickname');
 
   //welcome the user and tell him what's up
-  client.emit("new-message", message({
+  client.emit('new-message', message({
     type: 0,
     msg: ['Connected to server', 'Welcome! Who are you? Please enter a nickname :-)']
   }));
 
   //send username request
-  client.emit("request-nickname");
+  client.emit('request-nickname');
 
   /*
    *
@@ -69,22 +76,54 @@ io.on('connection', function(client){
     if (data.match(usernameRegex)) {
       users[client.id].nick = data;
 
-      console.log("-!- client (ID: " + client.id + ") changed nickname to " + data);
+      console.log('-!- client (ID: ' + client.id + ') changed nickname to ' + data);
 
-      client.emit("new-message", message({
+      client.emit('new-message', message({
         type: 0,
         msg: ['You\'re now known as ' + data, 'You may now start chatting. If you\'re new here, type /help to get started.']
       }));
 
-      client.emit("nickname-ok");
+      client.emit('nickname-ok');
+      
+      io.emit('update-users', users);
     }else {
-      console.log("-!- client (ID: " + client.id + ") requested invalid nickname " + data)
+      console.log('-!- client (ID: ' + client.id + ') requested invalid nickname ' + data)
 
-      client.emit("new-message", message({
+      client.emit('new-message', message({
         type: 0,
         msg: ['Invalid nickname. Allowed characters: a-z, A-Z and _']
       }));
     }
+  });
+
+  //Message from client
+  client.on('new-message', function(data) {
+    var user = users[client.id];
+    var channel = channels[data.channel];
+
+    console.log('<' + user.nick + '@' + channel.name + '> ' + data.msg);
+
+    //it's command!
+    if (data.msg.charAt(0) == '/') {
+      client.emit('new-message', message({
+        type: 0,
+        msg: ['HELLO!', 'KEK!', 'HAHAH!']
+      }));
+
+    }else {
+      if (data.channel != 0) {
+
+      }else {
+
+      }
+    }
+
+  });
+
+  //Client disconnected
+  client.on('disconnect', function() {
+    delete users[client.id];
+    io.emit('update-users', users);
   });
 
 });
@@ -111,6 +150,15 @@ SERVERMSG (type = 0)
   id: 1,
   type: 0,
   msg: ['kek', 'bur']
+}
+
+USER LIST FORMAT
+
+{
+  0: {
+    nick: 'asd',
+    realname: undefined
+  }
 }
 
 */

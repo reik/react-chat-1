@@ -22390,17 +22390,10 @@
 	    var _this = _possibleConstructorReturn(this, (ChatMain.__proto__ || Object.getPrototypeOf(ChatMain)).call(this, props));
 	
 	    _this.state = {
+	      users: {},
 	      channels: [{
 	        id: 0,
 	        name: 'Status window',
-	        users: null
-	      }, {
-	        id: 1,
-	        name: '#general',
-	        users: null
-	      }, {
-	        id: 2,
-	        name: '#secret',
 	        users: null
 	      }],
 	      messages: {
@@ -22427,6 +22420,9 @@
 	      socket.on('nickname-ok', function () {
 	        _this2.setState({ requestingNickname: false });
 	      });
+	      socket.on('update-users', function (data) {
+	        _this2.setState({ users: data });
+	      });
 	    }
 	  }, {
 	    key: 'handleIncomingMessage',
@@ -22445,8 +22441,14 @@
 	  }, {
 	    key: 'handleMessageField',
 	    value: function handleMessageField(value) {
+	      //if in nickname request mode, send set-nickname packet. Else send a message to current channel.
 	      if (this.state.requestingNickname) {
 	        socket.emit('set-nickname', value);
+	      } else {
+	        socket.emit('new-message', {
+	          channel: this.state.currentChannel,
+	          msg: value
+	        });
 	      }
 	    }
 	  }, {
@@ -22466,7 +22468,7 @@
 	              { className: 'sidepanel_content' },
 	              _react2.default.createElement(_Header2.default, null),
 	              _react2.default.createElement(_Channels2.default, { channels: this.state.channels }),
-	              _react2.default.createElement(_Users2.default, null)
+	              _react2.default.createElement(_Users2.default, { users: this.state.users })
 	            )
 	          ),
 	          _react2.default.createElement(
@@ -22746,7 +22748,7 @@
   \*********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -22757,6 +22759,10 @@
 	var _react = __webpack_require__(/*! react */ 1);
 	
 	var _react2 = _interopRequireDefault(_react);
+	
+	var _User = __webpack_require__(/*! ./User */ 194);
+	
+	var _User2 = _interopRequireDefault(_User);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -22776,15 +22782,24 @@
 	  }
 	
 	  _createClass(Users, [{
-	    key: "render",
+	    key: 'render',
 	    value: function render() {
+	      var _this2 = this;
+	
 	      return _react2.default.createElement(
-	        "div",
-	        { className: "users" },
+	        'div',
+	        { className: 'users' },
 	        _react2.default.createElement(
-	          "strong",
+	          'strong',
 	          null,
-	          "Users in this channel"
+	          'Users in this channel'
+	        ),
+	        _react2.default.createElement(
+	          'ul',
+	          { className: 'userlist' },
+	          Object.keys(this.props.users).map(function (userid) {
+	            return _react2.default.createElement(_User2.default, { key: userid, nick: _this2.props.users[userid].nick });
+	          })
 	        )
 	      );
 	    }
@@ -23251,6 +23266,71 @@
 	}(_react2.default.Component);
 	
 	exports.default = Channel;
+
+/***/ },
+/* 194 */
+/*!********************************!*\
+  !*** ./src/components/User.js ***!
+  \********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(/*! react */ 1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var User = function (_React$Component) {
+	  _inherits(User, _React$Component);
+	
+	  function User(props) {
+	    _classCallCheck(this, User);
+	
+	    var _this = _possibleConstructorReturn(this, (User.__proto__ || Object.getPrototypeOf(User)).call(this, props));
+	
+	    _this.handleClick = _this.handleClick.bind(_this);
+	    return _this;
+	  }
+	
+	  _createClass(User, [{
+	    key: "handleClick",
+	    value: function handleClick(e) {
+	      alert("KEK!");
+	      e.preventDefault();
+	    }
+	  }, {
+	    key: "render",
+	    value: function render() {
+	      return _react2.default.createElement(
+	        "li",
+	        { className: "user" },
+	        _react2.default.createElement(
+	          "a",
+	          { href: "#", onClick: this.handleClick },
+	          this.props.nick
+	        )
+	      );
+	    }
+	  }]);
+	
+	  return User;
+	}(_react2.default.Component);
+	
+	exports.default = User;
 
 /***/ }
 /******/ ]);

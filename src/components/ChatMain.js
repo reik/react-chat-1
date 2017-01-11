@@ -12,19 +12,10 @@ export default class ChatMain extends React.Component {
     super(props);
 
     this.state = {
+      users: {},
       channels: [{
         id: 0,
         name: 'Status window',
-        users: null
-      },
-      {
-        id: 1,
-        name: '#general',
-        users: null
-      },
-      {
-        id: 2,
-        name: '#secret',
         users: null
       }], 
       messages: {
@@ -42,6 +33,7 @@ export default class ChatMain extends React.Component {
     socket.on('new-message', this.handleIncomingMessage);
     socket.on('request-nickname', () => { this.setState({ requestingNickname: true }) });
     socket.on('nickname-ok', () => { this.setState({ requestingNickname: false }) });
+    socket.on('update-users', (data) => { this.setState({ users: data }) });
   }
 
   handleIncomingMessage(data) {
@@ -58,8 +50,14 @@ export default class ChatMain extends React.Component {
   }
 
   handleMessageField(value) {
+    //if in nickname request mode, send set-nickname packet. Else send a message to current channel.
     if (this.state.requestingNickname) {
       socket.emit('set-nickname', value);
+    }else {
+      socket.emit('new-message', {
+        channel: this.state.currentChannel,
+        msg: value
+      });
     }
   }
 
@@ -71,7 +69,7 @@ export default class ChatMain extends React.Component {
             <div className="sidepanel_content">
               <Header />
               <Channels channels={this.state.channels} />
-              <Users />
+              <Users users={this.state.users}/>
             </div>
           </div>
           <div className="chatpanel">

@@ -101,3 +101,13 @@ a:hover {
 .channel {
     list-style: none;
 }
+
+.user {
+    list-style: none;
+}
+
+.userlist {
+    margin: 0;
+    padding: 0;
+    padding-top: 8px;
+}
