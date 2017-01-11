@@ -4,7 +4,7 @@ export default class Users extends React.Component {
   render() {
     return (
       <div className="users">
-        UserList
+        <strong>Users in this channel</strong>
       </div>
     );
   }

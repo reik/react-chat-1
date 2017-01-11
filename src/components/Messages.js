@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Message from './Message';
+import ServerMessage from './ServerMessage';
+
 
 export default class Messages extends React.Component {
   
@@ -17,13 +19,20 @@ export default class Messages extends React.Component {
   }
 
   render() {
+    
+    console.log(this.props.messages);
+  
     return (
       <div className="messages">
         <ul className="messagelist">
           {
-            this.props.messages.map((message) => 
-              <Message key={message.id} user={message.user} msg={message.msg} />
-            )
+            this.props.messages.map((message) => {
+              if (message.type == 0) {
+                return message.msg.map((msg, i) => <ServerMessage key={message.id + '#' + i} msg={msg} />);
+              }else {
+                return <Message key={message.id} user={message.user} msg={message.msg} />;
+              }
+            })
           }
         </ul>
       </div>

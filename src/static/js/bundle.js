@@ -22349,17 +22349,29 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Users = __webpack_require__(/*! ./Users */ 184);
+	var _immutabilityHelper = __webpack_require__(/*! immutability-helper */ 184);
+	
+	var _immutabilityHelper2 = _interopRequireDefault(_immutabilityHelper);
+	
+	var _Users = __webpack_require__(/*! ./Users */ 186);
 	
 	var _Users2 = _interopRequireDefault(_Users);
 	
-	var _Messages = __webpack_require__(/*! ./Messages */ 185);
+	var _Messages = __webpack_require__(/*! ./Messages */ 187);
 	
 	var _Messages2 = _interopRequireDefault(_Messages);
 	
-	var _MessageForm = __webpack_require__(/*! ./MessageForm */ 187);
+	var _MessageForm = __webpack_require__(/*! ./MessageForm */ 189);
 	
 	var _MessageForm2 = _interopRequireDefault(_MessageForm);
+	
+	var _Header = __webpack_require__(/*! ./Header */ 190);
+	
+	var _Header2 = _interopRequireDefault(_Header);
+	
+	var _Channels = __webpack_require__(/*! ./Channels */ 191);
+	
+	var _Channels2 = _interopRequireDefault(_Channels);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -22378,27 +22390,65 @@
 	    var _this = _possibleConstructorReturn(this, (ChatMain.__proto__ || Object.getPrototypeOf(ChatMain)).call(this, props));
 	
 	    _this.state = {
-	      users: [],
-	      messages: [{
-	        id: 1,
-	        user: 'Make',
-	        msg: 'Hei maailma!'
+	      users: [{
+	        id: 0,
+	        name: 'Make'
 	      }, {
-	        id: 2,
-	        user: 'Jake',
-	        msg: 'Hello world!'
+	        id: 1,
+	        name: 'Jorma'
 	      }],
-	      keycount: 3
+	      channels: [{
+	        id: 0,
+	        name: 'Status window',
+	        users: null
+	      }, {
+	        id: 1,
+	        name: '#general',
+	        users: [0, 1]
+	      }],
+	      messages: {
+	        0: [],
+	        1: [{
+	          type: 1,
+	          id: 1,
+	          user: 0,
+	          msg: 'Hei maailma!'
+	        }, {
+	          type: 1,
+	          id: 2,
+	          user: 1,
+	          msg: 'Hello world!'
+	        }]
+	      },
+	      keycount: 3,
+	      currentChannel: 0
 	    };
 	
 	    _this.handleMessageField = _this.handleMessageField.bind(_this);
+	    _this.handleIncomingMessage = _this.handleIncomingMessage.bind(_this);
 	    return _this;
 	  }
 	
 	  _createClass(ChatMain, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      socket.on('init', function () {});
+	      socket.on('new-message', this.handleIncomingMessage);
+	    }
+	  }, {
+	    key: 'handleIncomingMessage',
+	    value: function handleIncomingMessage(data) {
+	      //server message
+	      if (data.type == 0) {
+	        var newMessage = {
+	          type: 0,
+	          id: data.id,
+	          msg: data.msg
+	        };
+	
+	        this.setState({ messages: (0, _immutabilityHelper2.default)(this.state.messages, { 0: { $push: [newMessage] } }) });
+	      }
+	
+	      console.log(this.state.messages);
 	    }
 	  }, {
 	    key: 'handleMessageField',
@@ -22428,12 +22478,18 @@
 	          _react2.default.createElement(
 	            'div',
 	            { className: 'sidepanel' },
-	            _react2.default.createElement(_Users2.default, null)
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'sidepanel_content' },
+	              _react2.default.createElement(_Header2.default, null),
+	              _react2.default.createElement(_Channels2.default, null),
+	              _react2.default.createElement(_Users2.default, null)
+	            )
 	          ),
 	          _react2.default.createElement(
 	            'div',
 	            { className: 'chatpanel' },
-	            _react2.default.createElement(_Messages2.default, { messages: this.state.messages }),
+	            _react2.default.createElement(_Messages2.default, { messages: this.state.messages[this.state.currentChannel] }),
 	            _react2.default.createElement(_MessageForm2.default, { handleSubmit: this.handleMessageField })
 	          )
 	        )
@@ -22448,6 +22504,260 @@
 
 /***/ },
 /* 184 */
+/*!****************************************!*\
+  !*** ./~/immutability-helper/index.js ***!
+  \****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var invariant = __webpack_require__(/*! invariant */ 185);
+	
+	var hasOwnProperty = Object.prototype.hasOwnProperty;
+	var splice = Array.prototype.splice;
+	
+	var assign = Object.assign || function assign(target, source) {
+	  var keys = getAllKeys(source);
+	  for (var i = 0; i < keys.length; i++) {
+	    var key = keys[i];
+	    if (hasOwnProperty.call(source, key)) {
+	      target[key] = source[key];
+	    }
+	  }
+	  return target;
+	}
+	
+	var getAllKeys = typeof Object.getOwnPropertySymbols === 'function' ?
+	  function(obj) { return Object.keys(obj).concat(Object.getOwnPropertySymbols(obj)) } :
+	  function(obj) { return Object.keys(obj) }
+	;
+	
+	function copy(object) {
+	  if (object instanceof Array) {
+	    return object.slice();
+	  } else if (object && typeof object === 'object') {
+	    return assign(new object.constructor(), object);
+	  } else {
+	    return object;
+	  }
+	}
+	
+	
+	function newContext() {
+	  var commands = assign({}, defaultCommands);
+	  update.extend = function(directive, fn) {
+	    commands[directive] = fn;
+	  }
+	
+	  return update;
+	
+	  function update(object, spec) {
+	    invariant(
+	      !Array.isArray(spec),
+	      'update(): You provided an invalid spec to update(). The spec may ' +
+	      'not contain an array except as the value of $set, $push, $unshift, ' +
+	      '$splice or any custom command allowing an array value.'
+	    );
+	
+	    invariant(
+	      typeof spec === 'object' && spec !== null,
+	      'update(): You provided an invalid spec to update(). The spec and ' +
+	      'every included key path must be plain objects containing one of the ' +
+	      'following commands: %s.',
+	      Object.keys(commands).join(', ')
+	    );
+	
+	    var nextObject = object;
+	    var specKeys = getAllKeys(spec)
+	    var index, key;
+	    for (index = 0; index < specKeys.length; index++) {
+	      var key = specKeys[index];
+	      if (hasOwnProperty.call(commands, key)) {
+	        nextObject = commands[key](spec[key], nextObject, spec, object);
+	      } else {
+	        var nextValueForKey = update(object[key], spec[key]);
+	        if (nextValueForKey !== nextObject[key]) {
+	          if (nextObject === object) {
+	            nextObject = copy(object);
+	          }
+	          nextObject[key] = nextValueForKey;
+	        }
+	      }
+	    }
+	    return nextObject;
+	  }
+	
+	}
+	
+	var defaultCommands = {
+	  $push: function(value, original, spec) {
+	    invariantPushAndUnshift(original, spec, '$push');
+	    return original.concat(value);
+	  },
+	  $unshift: function(value, original, spec) {
+	    invariantPushAndUnshift(original, spec, '$unshift');
+	    return value.concat(original);
+	  },
+	  $splice: function(value, nextObject, spec, object) {
+	    var originalValue = nextObject === object ? copy(object) : nextObject;
+	    invariantSplices(originalValue, spec);
+	    value.forEach(function(args) {
+	      invariantSplice(args);
+	      splice.apply(originalValue, args);
+	    });
+	    return originalValue;
+	  },
+	  $set: function(value, original, spec) {
+	    invariantSet(spec);
+	    return value;
+	  },
+	  $merge: function(value, nextObject, spec, object) {
+	    var originalValue = nextObject === object ? copy(object) : nextObject;
+	    invariantMerge(originalValue, value);
+	    getAllKeys(value).forEach(function(key) {
+	      originalValue[key] = value[key];
+	    });
+	    return originalValue;
+	  },
+	  $apply: function(value, original) {
+	    invariantApply(value);
+	    return value(original);
+	  }
+	};
+	
+	
+	
+	module.exports = newContext();
+	module.exports.newContext = newContext;
+	
+	
+	// invariants
+	
+	function invariantPushAndUnshift(value, spec, command) {
+	  invariant(
+	    Array.isArray(value),
+	    'update(): expected target of %s to be an array; got %s.',
+	    command,
+	    value
+	  );
+	  var specValue = spec[command];
+	  invariant(
+	    Array.isArray(specValue),
+	    'update(): expected spec of %s to be an array; got %s. ' +
+	    'Did you forget to wrap your parameter in an array?',
+	    command,
+	    specValue
+	  );
+	}
+	
+	function invariantSplices(value, spec) {
+	  invariant(
+	    Array.isArray(value),
+	    'Expected $splice target to be an array; got %s',
+	    value
+	  );
+	  invariantSplice(spec['$splice']);
+	}
+	
+	function invariantSplice(value) {
+	  invariant(
+	    Array.isArray(value),
+	    'update(): expected spec of $splice to be an array of arrays; got %s. ' +
+	    'Did you forget to wrap your parameters in an array?',
+	    value
+	  );
+	}
+	
+	function invariantApply(fn) {
+	  invariant(
+	    typeof fn === 'function',
+	    'update(): expected spec of $apply to be a function; got %s.',
+	    fn
+	  );
+	}
+	
+	function invariantSet(spec) {
+	  invariant(
+	    Object.keys(spec).length === 1,
+	    'Cannot have more than one key in an object with $set'
+	  );
+	}
+	
+	function invariantMerge(target, specValue) {
+	  invariant(
+	    specValue && typeof specValue === 'object',
+	    'update(): $merge expects a spec of type \'object\'; got %s',
+	    specValue
+	  );
+	  invariant(
+	    target && typeof target === 'object',
+	    'update(): $merge expects a target of type \'object\'; got %s',
+	    target
+	  );
+	}
+
+
+/***/ },
+/* 185 */
+/*!******************************************************!*\
+  !*** ./~/immutability-helper/~/invariant/browser.js ***!
+  \******************************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 */
+	
+	'use strict';
+	
+	/**
+	 * Use invariant() to assert state which your program assumes to be true.
+	 *
+	 * Provide sprintf-style format (only %s is supported) and arguments
+	 * to provide information about what broke and what you were
+	 * expecting.
+	 *
+	 * The invariant message will be stripped in production, but the invariant
+	 * will remain to ensure logic does not differ in production.
+	 */
+	
+	var invariant = function(condition, format, a, b, c, d, e, f) {
+	  if (process.env.NODE_ENV !== 'production') {
+	    if (format === undefined) {
+	      throw new Error('invariant requires an error message argument');
+	    }
+	  }
+	
+	  if (!condition) {
+	    var error;
+	    if (format === undefined) {
+	      error = new Error(
+	        'Minified exception occurred; use the non-minified dev environment ' +
+	        'for the full error message and additional helpful warnings.'
+	      );
+	    } else {
+	      var args = [a, b, c, d, e, f];
+	      var argIndex = 0;
+	      error = new Error(
+	        format.replace(/%s/g, function() { return args[argIndex++]; })
+	      );
+	      error.name = 'Invariant Violation';
+	    }
+	
+	    error.framesToPop = 1; // we don't care about invariant's own frame
+	    throw error;
+	  }
+	};
+	
+	module.exports = invariant;
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../../webpack/~/node-libs-browser/~/process/browser.js */ 3)))
+
+/***/ },
+/* 186 */
 /*!*********************************!*\
   !*** ./src/components/Users.js ***!
   \*********************************/
@@ -22488,7 +22798,11 @@
 	      return _react2.default.createElement(
 	        "div",
 	        { className: "users" },
-	        "UserList"
+	        _react2.default.createElement(
+	          "strong",
+	          null,
+	          "Users in this channel"
+	        )
 	      );
 	    }
 	  }]);
@@ -22499,7 +22813,7 @@
 	exports.default = Users;
 
 /***/ },
-/* 185 */
+/* 187 */
 /*!************************************!*\
   !*** ./src/components/Messages.js ***!
   \************************************/
@@ -22521,9 +22835,13 @@
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _Message = __webpack_require__(/*! ./Message */ 186);
+	var _Message = __webpack_require__(/*! ./Message */ 188);
 	
 	var _Message2 = _interopRequireDefault(_Message);
+	
+	var _ServerMessage = __webpack_require__(/*! ./ServerMessage */ 192);
+	
+	var _ServerMessage2 = _interopRequireDefault(_ServerMessage);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -22559,6 +22877,9 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
+	
+	      console.log(this.props.messages);
+	
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'messages' },
@@ -22566,7 +22887,13 @@
 	          'ul',
 	          { className: 'messagelist' },
 	          this.props.messages.map(function (message) {
-	            return _react2.default.createElement(_Message2.default, { key: message.id, user: message.user, msg: message.msg });
+	            if (message.type == 0) {
+	              return message.msg.map(function (msg, i) {
+	                return _react2.default.createElement(_ServerMessage2.default, { key: message.id + '#' + i, msg: msg });
+	              });
+	            } else {
+	              return _react2.default.createElement(_Message2.default, { key: message.id, user: message.user, msg: message.msg });
+	            }
 	          })
 	        )
 	      );
@@ -22579,7 +22906,7 @@
 	exports.default = Messages;
 
 /***/ },
-/* 186 */
+/* 188 */
 /*!***********************************!*\
   !*** ./src/components/Message.js ***!
   \***********************************/
@@ -22634,7 +22961,7 @@
 	exports.default = Message;
 
 /***/ },
-/* 187 */
+/* 189 */
 /*!***************************************!*\
   !*** ./src/components/MessageForm.js ***!
   \***************************************/
@@ -22707,6 +23034,167 @@
 	}(_react2.default.Component);
 	
 	exports.default = MessageForm;
+
+/***/ },
+/* 190 */
+/*!**********************************!*\
+  !*** ./src/components/Header.js ***!
+  \**********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(/*! react */ 1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Header = function (_React$Component) {
+	  _inherits(Header, _React$Component);
+	
+	  function Header() {
+	    _classCallCheck(this, Header);
+	
+	    return _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).apply(this, arguments));
+	  }
+	
+	  _createClass(Header, [{
+	    key: "render",
+	    value: function render() {
+	      return _react2.default.createElement(
+	        "div",
+	        { className: "header" },
+	        "React Chat"
+	      );
+	    }
+	  }]);
+	
+	  return Header;
+	}(_react2.default.Component);
+	
+	exports.default = Header;
+
+/***/ },
+/* 191 */
+/*!************************************!*\
+  !*** ./src/components/Channels.js ***!
+  \************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(/*! react */ 1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Channels = function (_React$Component) {
+	  _inherits(Channels, _React$Component);
+	
+	  function Channels() {
+	    _classCallCheck(this, Channels);
+	
+	    return _possibleConstructorReturn(this, (Channels.__proto__ || Object.getPrototypeOf(Channels)).apply(this, arguments));
+	  }
+	
+	  _createClass(Channels, [{
+	    key: "render",
+	    value: function render() {
+	      return _react2.default.createElement(
+	        "div",
+	        { className: "channels" },
+	        _react2.default.createElement(
+	          "strong",
+	          null,
+	          "Channels"
+	        )
+	      );
+	    }
+	  }]);
+	
+	  return Channels;
+	}(_react2.default.Component);
+	
+	exports.default = Channels;
+
+/***/ },
+/* 192 */
+/*!*****************************************!*\
+  !*** ./src/components/ServerMessage.js ***!
+  \*****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(/*! react */ 1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var ServerMessage = function (_React$Component) {
+	  _inherits(ServerMessage, _React$Component);
+	
+	  function ServerMessage() {
+	    _classCallCheck(this, ServerMessage);
+	
+	    return _possibleConstructorReturn(this, (ServerMessage.__proto__ || Object.getPrototypeOf(ServerMessage)).apply(this, arguments));
+	  }
+	
+	  _createClass(ServerMessage, [{
+	    key: "render",
+	    value: function render() {
+	      return _react2.default.createElement(
+	        "li",
+	        { className: "message" },
+	        "-!- ",
+	        this.props.msg
+	      );
+	    }
+	  }]);
+	
+	  return ServerMessage;
+	}(_react2.default.Component);
+	
+	exports.default = ServerMessage;
 
 /***/ }
 /******/ ]);

@@ -3,7 +3,12 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-const shortid = require('shortid');
+
+/*
+ *
+ * Express stuff
+ *
+*/
 
 const port = process.env.PORT || 3000;
 
@@ -17,18 +22,58 @@ http.listen(port, function() {
     console.log("Listening on *:" + port);
 });
 
-var users = [];
-var messages = [];
+/*
+ *
+ * Socket.io stuff (basically the serverside functionality)
+ * 
+ */
+
+var users = {};
+var messageCounter = 0;
 
 io.on('connection', function(client){
   var newUser = {
-    id: client.id,
-    username: "user_" + shortid.generate()
+    nick: null,
+    realname: undefined
   }
   
-  users.push(newUser);
+  users[client.id] = newUser;
 
-  console.log('a user connected');
-  console.log(newUser);
-  client.emit("init");
+  console.log('-!- client (ID: '+ client.id +') connected, requesting username');
+
+  //welcome the user and tell him what's up
+  client.emit("new-message", message({
+    type: 0,
+    msg: ['Connected to server', 'Welcome! Who are you? Please enter a nickname :-)']
+  }));
+
+  //send username request
+  client.emit("request-username");
 });
+
+function message(data) {
+  data['id'] = messageCounter;
+  messageCounter = messageCounter + 1;
+  console.log(data);
+  return data;
+}
+
+/*
+MESSAGE FORMAT
+
+{
+  id: 1,
+  channel: 1,
+  user: 0,
+  msg: 'Hei maailma!'
+}
+
+SERVERMSG (type = 0)
+
+{
+  id: 1,
+  type: 0,
+  msg: ['kek', 'bur']
+}
+
+*/
