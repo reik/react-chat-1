@@ -22361,15 +22361,15 @@
 	
 	var _Messages2 = _interopRequireDefault(_Messages);
 	
-	var _MessageForm = __webpack_require__(/*! ./MessageForm */ 189);
+	var _MessageForm = __webpack_require__(/*! ./MessageForm */ 190);
 	
 	var _MessageForm2 = _interopRequireDefault(_MessageForm);
 	
-	var _Header = __webpack_require__(/*! ./Header */ 190);
+	var _Header = __webpack_require__(/*! ./Header */ 191);
 	
 	var _Header2 = _interopRequireDefault(_Header);
 	
-	var _Channels = __webpack_require__(/*! ./Channels */ 191);
+	var _Channels = __webpack_require__(/*! ./Channels */ 192);
 	
 	var _Channels2 = _interopRequireDefault(_Channels);
 	
@@ -22393,6 +22393,14 @@
 	      channels: [{
 	        id: 0,
 	        name: 'Status window',
+	        users: null
+	      }, {
+	        id: 1,
+	        name: '#general',
+	        users: null
+	      }, {
+	        id: 2,
+	        name: '#secret',
 	        users: null
 	      }],
 	      messages: {
@@ -22457,7 +22465,7 @@
 	              'div',
 	              { className: 'sidepanel_content' },
 	              _react2.default.createElement(_Header2.default, null),
-	              _react2.default.createElement(_Channels2.default, null),
+	              _react2.default.createElement(_Channels2.default, { channels: this.state.channels }),
 	              _react2.default.createElement(_Users2.default, null)
 	            )
 	          ),
@@ -22814,7 +22822,7 @@
 	
 	var _Message2 = _interopRequireDefault(_Message);
 	
-	var _ServerMessage = __webpack_require__(/*! ./ServerMessage */ 192);
+	var _ServerMessage = __webpack_require__(/*! ./ServerMessage */ 189);
 	
 	var _ServerMessage2 = _interopRequireDefault(_ServerMessage);
 	
@@ -22934,6 +22942,59 @@
 
 /***/ },
 /* 189 */
+/*!*****************************************!*\
+  !*** ./src/components/ServerMessage.js ***!
+  \*****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(/*! react */ 1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var ServerMessage = function (_React$Component) {
+	  _inherits(ServerMessage, _React$Component);
+	
+	  function ServerMessage() {
+	    _classCallCheck(this, ServerMessage);
+	
+	    return _possibleConstructorReturn(this, (ServerMessage.__proto__ || Object.getPrototypeOf(ServerMessage)).apply(this, arguments));
+	  }
+	
+	  _createClass(ServerMessage, [{
+	    key: "render",
+	    value: function render() {
+	      return _react2.default.createElement(
+	        "li",
+	        { className: "message" },
+	        "-!- ",
+	        this.props.msg
+	      );
+	    }
+	  }]);
+	
+	  return ServerMessage;
+	}(_react2.default.Component);
+	
+	exports.default = ServerMessage;
+
+/***/ },
+/* 190 */
 /*!***************************************!*\
   !*** ./src/components/MessageForm.js ***!
   \***************************************/
@@ -23008,7 +23069,7 @@
 	exports.default = MessageForm;
 
 /***/ },
-/* 190 */
+/* 191 */
 /*!**********************************!*\
   !*** ./src/components/Header.js ***!
   \**********************************/
@@ -23060,13 +23121,13 @@
 	exports.default = Header;
 
 /***/ },
-/* 191 */
+/* 192 */
 /*!************************************!*\
   !*** ./src/components/Channels.js ***!
   \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -23077,6 +23138,10 @@
 	var _react = __webpack_require__(/*! react */ 1);
 	
 	var _react2 = _interopRequireDefault(_react);
+	
+	var _Channel = __webpack_require__(/*! ./Channel */ 193);
+	
+	var _Channel2 = _interopRequireDefault(_Channel);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -23096,15 +23161,22 @@
 	  }
 	
 	  _createClass(Channels, [{
-	    key: "render",
+	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
-	        "div",
-	        { className: "channels" },
+	        'div',
+	        { className: 'channels' },
 	        _react2.default.createElement(
-	          "strong",
+	          'strong',
 	          null,
-	          "Channels"
+	          'Channels'
+	        ),
+	        _react2.default.createElement(
+	          'ul',
+	          { className: 'channellist' },
+	          this.props.channels.map(function (channel) {
+	            return _react2.default.createElement(_Channel2.default, { key: channel.id, name: channel.name });
+	          })
 	        )
 	      );
 	    }
@@ -23116,10 +23188,10 @@
 	exports.default = Channels;
 
 /***/ },
-/* 192 */
-/*!*****************************************!*\
-  !*** ./src/components/ServerMessage.js ***!
-  \*****************************************/
+/* 193 */
+/*!***********************************!*\
+  !*** ./src/components/Channel.js ***!
+  \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23142,31 +23214,43 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var ServerMessage = function (_React$Component) {
-	  _inherits(ServerMessage, _React$Component);
+	var Channel = function (_React$Component) {
+	  _inherits(Channel, _React$Component);
 	
-	  function ServerMessage() {
-	    _classCallCheck(this, ServerMessage);
+	  function Channel(props) {
+	    _classCallCheck(this, Channel);
 	
-	    return _possibleConstructorReturn(this, (ServerMessage.__proto__ || Object.getPrototypeOf(ServerMessage)).apply(this, arguments));
+	    var _this = _possibleConstructorReturn(this, (Channel.__proto__ || Object.getPrototypeOf(Channel)).call(this, props));
+	
+	    _this.handleClick = _this.handleClick.bind(_this);
+	    return _this;
 	  }
 	
-	  _createClass(ServerMessage, [{
+	  _createClass(Channel, [{
+	    key: "handleClick",
+	    value: function handleClick(e) {
+	      alert("KEK!");
+	      e.preventDefault();
+	    }
+	  }, {
 	    key: "render",
 	    value: function render() {
 	      return _react2.default.createElement(
 	        "li",
-	        { className: "message" },
-	        "-!- ",
-	        this.props.msg
+	        { className: "channel" },
+	        _react2.default.createElement(
+	          "a",
+	          { href: "#", onClick: this.handleClick },
+	          this.props.name
+	        )
 	      );
 	    }
 	  }]);
 	
-	  return ServerMessage;
+	  return Channel;
 	}(_react2.default.Component);
 	
-	exports.default = ServerMessage;
+	exports.default = Channel;
 
 /***/ }
 /******/ ]);

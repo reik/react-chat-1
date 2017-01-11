@@ -16,6 +16,16 @@ export default class ChatMain extends React.Component {
         id: 0,
         name: 'Status window',
         users: null
+      },
+      {
+        id: 1,
+        name: '#general',
+        users: null
+      },
+      {
+        id: 2,
+        name: '#secret',
+        users: null
       }], 
       messages: {
         0: []
@@ -60,7 +70,7 @@ export default class ChatMain extends React.Component {
           <div className="sidepanel">
             <div className="sidepanel_content">
               <Header />
-              <Channels />
+              <Channels channels={this.state.channels} />
               <Users />
             </div>
           </div>

@@ -7,6 +7,16 @@ body {
     color: #F0F0F0;
 }
 
+a:link, a:visited, a:active {
+    color: #F0F0F0;
+    text-decoration: none;
+}
+
+a:hover {
+    color: hotpink;
+}
+
+
 .twopanels {
     position: absolute;
     top: 0px;
@@ -76,4 +86,18 @@ body {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 12px;
+}
+
+.channels {
+    margin-bottom: 20px;
+}
+
+.channellist {
+    margin: 0;
+    padding: 0;
+    padding-top: 8px;
+}
+
+.channel {
+    list-style: none;
 }
