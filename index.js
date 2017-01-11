@@ -136,6 +136,7 @@ io.on('connection', function(client){
       if (data.channel != 0) {
         io.to('channel-' + data.channel).emit('new-message', message({
           type: 1,
+          sender: client.id,
           msg: data.msg,
           channel: data.channel
         }));
@@ -194,9 +195,10 @@ function getChannel(name) {
 MESSAGE FORMAT
 
 {
+  type: 1,
   id: 1,
   channel: 1,
-  user: 0,
+  sender: 0,
   msg: 'Hei maailma!'
 }
 

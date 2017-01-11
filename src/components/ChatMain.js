@@ -30,6 +30,7 @@ export default class ChatMain extends React.Component {
     this.changeChannel = this.changeChannel.bind(this);
     this.handleChannelJoin = this.handleChannelJoin.bind(this);
     this.addStatusMessage = this.addStatusMessage.bind(this);
+    this.addNormalMessage = this.addNormalMessage.bind(this);
     this.handleDisconnect = this.handleDisconnect.bind(this);
   }
 
@@ -53,7 +54,63 @@ export default class ChatMain extends React.Component {
         this.addStatusMessage(data.msg, 0);
       }
     }else if (data.type == 1) {
-      console.log(data);
+      this.addNormalMessage(data);
+    }
+  }
+
+  addNormalMessage(data) {
+    var newMessage = {
+      type: 1,
+      sender: this.state.users[data.sender].nick,
+      id: data.id,
+      msg: data.msg
+    }
+
+    var messages = this.state.messages;
+    messages[data.channel].push(newMessage);
+    
+    this.setState({ messages: messages });
+  }
+
+  addStatusMessage(msg, channel) {
+    var message = {
+      type: 0,
+      id: 'status-' + this.state.statusMessageIDCounter,
+      msg: msg
+    };
+
+    this.setState({ statusMessageIDCounter: this.state.statusMessageIDCounter + 1 });
+
+    var messages = this.state.messages;
+    messages[channel].push(message);
+
+    this.setState({ messages: messages });
+  }
+
+  changeChannel(value) {
+    this.setState({ currentChannel: value });
+  }
+
+  handleChannelJoin(data) {
+    this.setState({ channels: update(this.state.channels, {$push: [data]}) });
+
+    var currentMessages = this.state.messages;
+    currentMessages[data.id] = [];
+
+    this.addStatusMessage('Welcome to channel!', data.id);
+
+    this.setState({ messages: currentMessages, currentChannel: data.id });
+  }
+
+  handleMessageField(value) {
+    //if in nickname request mode, send set-nickname packet. Else send a message to current channel.
+    if (this.state.requestingNickname) {
+      socket.emit('set-nickname', value);
+    }else {
+      socket.emit('new-message', {
+        channel: this.state.currentChannel,
+        msg: value
+      });
     }
   }
 
@@ -75,50 +132,6 @@ export default class ChatMain extends React.Component {
     this.addStatusMessage('Disconnected from server', 0);
   }
 
-  addStatusMessage(msg, channel) {
-    var message = {
-      type: 0,
-      id: 'status-' + this.state.statusMessageIDCounter,
-      msg: msg
-    };
-
-    console.log(message);
-
-    this.setState({ statusMessageIDCounter: this.state.statusMessageIDCounter + 1 });
-
-    var messages = this.state.messages;
-    messages[channel].push(message);
-
-    this.setState({ messages: messages });
-  }
-
-  handleMessageField(value) {
-    //if in nickname request mode, send set-nickname packet. Else send a message to current channel.
-    if (this.state.requestingNickname) {
-      socket.emit('set-nickname', value);
-    }else {
-      socket.emit('new-message', {
-        channel: this.state.currentChannel,
-        msg: value
-      });
-    }
-  }
-
-  changeChannel(value) {
-    this.setState({ currentChannel: value });
-  }
-
-  handleChannelJoin(data) {
-    this.setState({ channels: update(this.state.channels, {$push: [data]}) });
-
-    var currentMessages = this.state.messages;
-    currentMessages[data.id] = [];
-
-    this.addStatusMessage('Welcome to channel!', data.id);
-
-    this.setState({ messages: currentMessages, currentChannel: data.id });
-  }
-
   render() {
     return (
       <div className="main">
@@ -131,7 +144,7 @@ export default class ChatMain extends React.Component {
             </div>
           </div>
           <div className="chatpanel">
-            <Messages messages={this.state.messages[this.state.currentChannel]} users={this.state.users} />
+            <Messages messages={this.state.messages[this.state.currentChannel]} />
             <MessageForm handleSubmit={this.handleMessageField} />
           </div>
         </div>

@@ -22408,6 +22408,7 @@
 	    _this.changeChannel = _this.changeChannel.bind(_this);
 	    _this.handleChannelJoin = _this.handleChannelJoin.bind(_this);
 	    _this.addStatusMessage = _this.addStatusMessage.bind(_this);
+	    _this.addNormalMessage = _this.addNormalMessage.bind(_this);
 	    _this.handleDisconnect = _this.handleDisconnect.bind(_this);
 	    return _this;
 	  }
@@ -22445,7 +22446,68 @@
 	          this.addStatusMessage(data.msg, 0);
 	        }
 	      } else if (data.type == 1) {
-	        console.log(data);
+	        this.addNormalMessage(data);
+	      }
+	    }
+	  }, {
+	    key: 'addNormalMessage',
+	    value: function addNormalMessage(data) {
+	      var newMessage = {
+	        type: 1,
+	        sender: this.state.users[data.sender].nick,
+	        id: data.id,
+	        msg: data.msg
+	      };
+	
+	      var messages = this.state.messages;
+	      messages[data.channel].push(newMessage);
+	
+	      this.setState({ messages: messages });
+	    }
+	  }, {
+	    key: 'addStatusMessage',
+	    value: function addStatusMessage(msg, channel) {
+	      var message = {
+	        type: 0,
+	        id: 'status-' + this.state.statusMessageIDCounter,
+	        msg: msg
+	      };
+	
+	      this.setState({ statusMessageIDCounter: this.state.statusMessageIDCounter + 1 });
+	
+	      var messages = this.state.messages;
+	      messages[channel].push(message);
+	
+	      this.setState({ messages: messages });
+	    }
+	  }, {
+	    key: 'changeChannel',
+	    value: function changeChannel(value) {
+	      this.setState({ currentChannel: value });
+	    }
+	  }, {
+	    key: 'handleChannelJoin',
+	    value: function handleChannelJoin(data) {
+	      this.setState({ channels: (0, _immutabilityHelper2.default)(this.state.channels, { $push: [data] }) });
+	
+	      var currentMessages = this.state.messages;
+	      currentMessages[data.id] = [];
+	
+	      this.addStatusMessage('Welcome to channel!', data.id);
+	
+	      this.setState({ messages: currentMessages, currentChannel: data.id });
+	    }
+	  }, {
+	    key: 'handleMessageField',
+	    value: function handleMessageField(value) {
+	      //if in nickname request mode, send set-nickname packet. Else send a message to current channel.
+	      if (this.state.requestingNickname) {
+	        socket.emit('set-nickname', value);
+	      } else {
+	        socket.emit('new-message', {
+	          channel: this.state.currentChannel,
+	          msg: value
+	        });
 	      }
 	    }
 	  }, {
@@ -22465,54 +22527,6 @@
 	      });
 	
 	      this.addStatusMessage('Disconnected from server', 0);
-	    }
-	  }, {
-	    key: 'addStatusMessage',
-	    value: function addStatusMessage(msg, channel) {
-	      var message = {
-	        type: 0,
-	        id: 'status-' + this.state.statusMessageIDCounter,
-	        msg: msg
-	      };
-	
-	      console.log(message);
-	
-	      this.setState({ statusMessageIDCounter: this.state.statusMessageIDCounter + 1 });
-	
-	      var messages = this.state.messages;
-	      messages[channel].push(message);
-	
-	      this.setState({ messages: messages });
-	    }
-	  }, {
-	    key: 'handleMessageField',
-	    value: function handleMessageField(value) {
-	      //if in nickname request mode, send set-nickname packet. Else send a message to current channel.
-	      if (this.state.requestingNickname) {
-	        socket.emit('set-nickname', value);
-	      } else {
-	        socket.emit('new-message', {
-	          channel: this.state.currentChannel,
-	          msg: value
-	        });
-	      }
-	    }
-	  }, {
-	    key: 'changeChannel',
-	    value: function changeChannel(value) {
-	      this.setState({ currentChannel: value });
-	    }
-	  }, {
-	    key: 'handleChannelJoin',
-	    value: function handleChannelJoin(data) {
-	      this.setState({ channels: (0, _immutabilityHelper2.default)(this.state.channels, { $push: [data] }) });
-	
-	      var currentMessages = this.state.messages;
-	      currentMessages[data.id] = [];
-	
-	      this.addStatusMessage('Welcome to channel!', data.id);
-	
-	      this.setState({ messages: currentMessages, currentChannel: data.id });
 	    }
 	  }, {
 	    key: 'render',
@@ -22537,7 +22551,7 @@
 	          _react2.default.createElement(
 	            'div',
 	            { className: 'chatpanel' },
-	            _react2.default.createElement(_Messages2.default, { messages: this.state.messages[this.state.currentChannel], users: this.state.users }),
+	            _react2.default.createElement(_Messages2.default, { messages: this.state.messages[this.state.currentChannel] }),
 	            _react2.default.createElement(_MessageForm2.default, { handleSubmit: this.handleMessageField })
 	          )
 	        )
@@ -22948,7 +22962,7 @@
 	            if (message.type == 0) {
 	              return _react2.default.createElement(_StatusMessage2.default, { key: message.id, msg: message.msg });
 	            } else {
-	              return _react2.default.createElement(_Message2.default, { key: message.id, user: message.user, msg: message.msg });
+	              return _react2.default.createElement(_Message2.default, { key: message.id, user: message.sender, msg: message.msg });
 	            }
 	          })
 	        )

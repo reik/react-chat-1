@@ -27,7 +27,7 @@ export default class Messages extends React.Component {
               if (message.type == 0) {
                 return <StatusMessage key={message.id} msg={message.msg} />;
               }else {
-                return <Message key={message.id} user={message.user} msg={message.msg} />;
+                return <Message key={message.id} user={message.sender} msg={message.msg} />;
               }
             })
           }
