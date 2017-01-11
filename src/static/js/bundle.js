@@ -22390,35 +22390,13 @@
 	    var _this = _possibleConstructorReturn(this, (ChatMain.__proto__ || Object.getPrototypeOf(ChatMain)).call(this, props));
 	
 	    _this.state = {
-	      users: [{
-	        id: 0,
-	        name: 'Make'
-	      }, {
-	        id: 1,
-	        name: 'Jorma'
-	      }],
 	      channels: [{
 	        id: 0,
 	        name: 'Status window',
 	        users: null
-	      }, {
-	        id: 1,
-	        name: '#general',
-	        users: [0, 1]
 	      }],
 	      messages: {
-	        0: [],
-	        1: [{
-	          type: 1,
-	          id: 1,
-	          user: 0,
-	          msg: 'Hei maailma!'
-	        }, {
-	          type: 1,
-	          id: 2,
-	          user: 1,
-	          msg: 'Hello world!'
-	        }]
+	        0: []
 	      },
 	      currentChannel: 0,
 	      requestingNickname: false
