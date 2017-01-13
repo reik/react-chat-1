@@ -22871,7 +22871,7 @@
 	        _react2.default.createElement(
 	          'strong',
 	          null,
-	          'Users in this channel'
+	          'Online users (server)'
 	        ),
 	        _react2.default.createElement(
 	          'ul',
@@ -22919,32 +22919,19 @@
 	var User = function (_React$Component) {
 	  _inherits(User, _React$Component);
 	
-	  function User(props) {
+	  function User() {
 	    _classCallCheck(this, User);
 	
-	    var _this = _possibleConstructorReturn(this, (User.__proto__ || Object.getPrototypeOf(User)).call(this, props));
-	
-	    _this.handleClick = _this.handleClick.bind(_this);
-	    return _this;
+	    return _possibleConstructorReturn(this, (User.__proto__ || Object.getPrototypeOf(User)).apply(this, arguments));
 	  }
 	
 	  _createClass(User, [{
-	    key: "handleClick",
-	    value: function handleClick(e) {
-	      alert("KEK!");
-	      e.preventDefault();
-	    }
-	  }, {
 	    key: "render",
 	    value: function render() {
 	      return _react2.default.createElement(
 	        "li",
 	        { className: "user" },
-	        _react2.default.createElement(
-	          "a",
-	          { href: "#", onClick: this.handleClick },
-	          this.props.nick
-	        )
+	        this.props.nick
 	      );
 	    }
 	  }]);
