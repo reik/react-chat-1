@@ -25,9 +25,9 @@ export default class Messages extends React.Component {
           {
             this.props.messages.map((message) => {
               if (message.type == 0) {
-                return <StatusMessage key={message.id} time={message.date.getHours() + ':' + message.date.getMinutes()} msg={message.msg} />;
+                return <StatusMessage key={message.id} time={message.date} msg={message.msg} />;
               }else {
-                return <Message key={message.id} time={message.date.getHours() + ':' + message.date.getMinutes()} user={message.sender} msg={message.msg} />;
+                return <Message key={message.id} time={message.date} user={message.sender} msg={message.msg} />;
               }
             })
           }

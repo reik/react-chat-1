@@ -1,10 +1,11 @@
 import React from 'react';
+import DateFormat from 'dateformat';
 
 export default class Message extends React.Component {
   render() {
     return (
       <li className="message">
-        [{this.props.time}] &lt;{this.props.user}&gt; {this.props.msg}
+        [{DateFormat(this.props.time, 'HH:MM')}] &lt;{this.props.user}&gt; {this.props.msg}
       </li>
     );
   }
