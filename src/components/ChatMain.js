@@ -48,10 +48,10 @@ export default class ChatMain extends React.Component {
     if (data.type == 0) {
       if (Array.isArray(data.msg)) {
         data.msg.forEach((singleMsg) => {
-          this.addStatusMessage(singleMsg, 0);
+          this.addStatusMessage(singleMsg, 0, data.date);
         });
       }else {
-        this.addStatusMessage(data.msg, 0);
+        this.addStatusMessage(data.msg, 0, data.date);
       }
     }else if (data.type == 1) {
       this.addNormalMessage(data);
@@ -63,6 +63,7 @@ export default class ChatMain extends React.Component {
       type: 1,
       sender: this.state.users[data.sender].nick,
       id: data.id,
+      date: new Date(data.date),
       msg: data.msg
     }
 
@@ -72,10 +73,11 @@ export default class ChatMain extends React.Component {
     this.setState({ messages: messages });
   }
 
-  addStatusMessage(msg, channel) {
+  addStatusMessage(msg, channel, date) {
     var message = {
       type: 0,
       id: 'status-' + this.state.statusMessageIDCounter,
+      date: new Date(date),
       msg: msg
     };
 
@@ -97,7 +99,7 @@ export default class ChatMain extends React.Component {
     var currentMessages = this.state.messages;
     currentMessages[data.id] = [];
 
-    this.addStatusMessage('Welcome to channel!', data.id);
+    this.addStatusMessage('Welcome to channel!', data.id, Date.now());
 
     this.setState({ messages: currentMessages, currentChannel: data.id });
   }
@@ -129,7 +131,7 @@ export default class ChatMain extends React.Component {
       currentChannel: 0
     });
 
-    this.addStatusMessage('Disconnected from server', 0);
+    this.addStatusMessage('Disconnected from server', 0, Date.now());
   }
 
   render() {

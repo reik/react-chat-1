@@ -155,6 +155,8 @@ io.on('connection', function(client){
 
 //helper function for messages
 function message(data, isServerMessage) {
+  data['date'] = Date.now();
+  
   if (!isServerMessage) {
     data['id'] = messageCounter;
     messageCounter = messageCounter + 1;
@@ -199,6 +201,7 @@ MESSAGE FORMAT
   id: 1,
   channel: 1,
   sender: 0,
+  date: 3424234324,
   msg: 'Hei maailma!'
 }
 
@@ -206,6 +209,7 @@ SERVERMSG (type = 0) <-- NO ID NEEDED, ID IS CLIENTSIDE IN SERVER MESSAGES
 
 {
   type: 0,
+  date: 3424234324,
   msg: ['kek', 'bur']
 }
 
