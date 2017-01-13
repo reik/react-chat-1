@@ -32,6 +32,7 @@ export default class ChatMain extends React.Component {
     this.addStatusMessage = this.addStatusMessage.bind(this);
     this.addNormalMessage = this.addNormalMessage.bind(this);
     this.handleDisconnect = this.handleDisconnect.bind(this);
+    this.handleUserJoin = this.handleUserJoin.bind(this);
   }
 
   componentDidMount() {
@@ -40,7 +41,12 @@ export default class ChatMain extends React.Component {
     socket.on('nickname-ok', () => { this.setState({ requestingNickname: false }) });
     socket.on('update-users', (data) => { this.setState({ users: data }) });
     socket.on('channel-join', this.handleChannelJoin);
+    socket.on('channel-user-joined', this.handleUserJoin);
     socket.on('disconnect', this.handleDisconnect);
+  }
+
+  handleUserJoin(data) {
+    this.addStatusMessage(this.state.users[data.user].nick + ' joined the channel', data.channel, new Date(data.date));
   }
 
   handleIncomingMessage(data) {

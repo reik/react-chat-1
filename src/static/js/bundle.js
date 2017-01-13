@@ -22410,6 +22410,7 @@
 	    _this.addStatusMessage = _this.addStatusMessage.bind(_this);
 	    _this.addNormalMessage = _this.addNormalMessage.bind(_this);
 	    _this.handleDisconnect = _this.handleDisconnect.bind(_this);
+	    _this.handleUserJoin = _this.handleUserJoin.bind(_this);
 	    return _this;
 	  }
 	
@@ -22429,7 +22430,13 @@
 	        _this2.setState({ users: data });
 	      });
 	      socket.on('channel-join', this.handleChannelJoin);
+	      socket.on('channel-user-joined', this.handleUserJoin);
 	      socket.on('disconnect', this.handleDisconnect);
+	    }
+	  }, {
+	    key: 'handleUserJoin',
+	    value: function handleUserJoin(data) {
+	      this.addStatusMessage(this.state.users[data.user].nick + ' joined the channel', data.channel, new Date(data.date));
 	    }
 	  }, {
 	    key: 'handleIncomingMessage',

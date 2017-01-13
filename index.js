@@ -41,7 +41,7 @@ var channelCounter = 1;
 io.on('connection', function(client){
   var newUser = {
     nick: null,
-    realname: undefined
+    channels: []
   }
   
   users[client.id] = newUser;
@@ -117,14 +117,30 @@ io.on('connection', function(client){
         }else {
           var channelID = getChannel(split[1]);
 
-          //Tell channel id and name to user
-          client.emit('channel-join', {
-            id: channelID,
-            name: channels[channelID].name
-          });
+          if (users[client.id].channels.indexOf('channel-' + channelID) > -1) {
+            client.emit('new-message', message({
+              type: 0,
+              msg: 'You\'re already on channel ' + split[1]
+            }, true));
+          }else {
+            //Tell channel id and name to user
+            client.emit('channel-join', {
+              id: channelID,
+              name: channels[channelID].name
+            });
 
-          //Add user to the channel room (socket.io)
-          client.join('channel-' + channelID);
+            io.to('channel-' + channelID).emit('channel-user-joined', {
+              channel: channelID,
+              user: client.id,
+              date: Date.now()
+            });
+
+            //Add user to the channel room (socket.io)
+            client.join('channel-' + channelID);
+
+            //Remember the channel
+            users[client.id].channels.push('channel-' + channelID);
+          }
         }
       }else {
         client.emit('new-message', message({
@@ -156,7 +172,7 @@ io.on('connection', function(client){
 //helper function for messages
 function message(data, isServerMessage) {
   data['date'] = Date.now();
-  
+
   if (!isServerMessage) {
     data['id'] = messageCounter;
     messageCounter = messageCounter + 1;
@@ -218,8 +234,16 @@ USER LIST FORMAT
 {
   0: {
     nick: 'asd',
-    realname: undefined
+    channels: []
   }
+}
+
+USER JOIN FORMAT
+
+{
+  channel: 1,
+  user: 4,
+  date: 4832842
 }
 
 */
