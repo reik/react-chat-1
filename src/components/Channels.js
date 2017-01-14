@@ -10,8 +10,8 @@ export default class Channels extends React.Component {
         
         <ul className="channellist">
           {
-            this.props.channels.map((channel) => 
-              <Channel key={channel.id} channelID={channel.id} changeChannel={this.props.changeChannel} name={channel.name} />  
+            Object.keys(this.props.channels).map((channelID) => 
+              <Channel key={channelID} channelID={channelID} changeChannel={this.props.changeChannel} name={this.props.channels[channelID].name} />  
             )
           }
         </ul>

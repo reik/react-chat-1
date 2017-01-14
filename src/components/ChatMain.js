@@ -1,5 +1,4 @@
 import React from 'react';
-import update from 'immutability-helper';
 
 import Users from './Users';
 import Messages from './Messages';
@@ -13,10 +12,11 @@ export default class ChatMain extends React.Component {
 
     this.state = {
       users: {},
-      channels: [{
-        id: 0,
-        name: 'Status window'
-      }], 
+      channels: {
+        0: {
+          name: 'Status window'
+        }
+      }, 
       messages: {
         0: []
       },
@@ -107,14 +107,15 @@ export default class ChatMain extends React.Component {
   }
 
   handleChannelJoin(data) {
-    this.setState({ channels: update(this.state.channels, {$push: [data]}) });
+    var channels = this.state.channels;
+    channels[data.id] = { name: data.name }
 
     var currentMessages = this.state.messages;
     currentMessages[data.id] = [];
 
-    this.addStatusMessage('Welcome to the channel!', data.id, Date.now());
+    this.setState({ messages: currentMessages, currentChannel: data.id, channels: channels });
 
-    this.setState({ messages: currentMessages, currentChannel: data.id });
+    this.addStatusMessage('Welcome to the channel!', data.id, Date.now());
   }
 
   handleMessageField(value) {
@@ -132,11 +133,11 @@ export default class ChatMain extends React.Component {
   handleDisconnect() {
     var onlyStatusMessages = this.state.messages[0];
 
-    this.setState({ channels: [
-      { 
-        id: 0,
-        name: 'Status window'
-      }],
+    this.setState({ channels: {
+        0: {
+          name: 'Status window'
+        }
+      },
       messages: {
         0: onlyStatusMessages
       },
