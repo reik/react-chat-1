@@ -22404,12 +22404,13 @@
 	    _this.handleIncomingMessage = _this.handleIncomingMessage.bind(_this);
 	    _this.changeChannel = _this.changeChannel.bind(_this);
 	    _this.handleChannelJoin = _this.handleChannelJoin.bind(_this);
+	    _this.handleChannelLeave = _this.handleChannelLeave.bind(_this);
 	    _this.addStatusMessage = _this.addStatusMessage.bind(_this);
 	    _this.addNormalMessage = _this.addNormalMessage.bind(_this);
 	    _this.handleDisconnect = _this.handleDisconnect.bind(_this);
 	    _this.handleUserJoin = _this.handleUserJoin.bind(_this);
+	    _this.handleUserLeave = _this.handleUserLeave.bind(_this);
 	    _this.handleUserDisconnect = _this.handleUserDisconnect.bind(_this);
-	
 	    return _this;
 	  }
 	
@@ -22429,7 +22430,9 @@
 	        _this2.setState({ users: data });
 	      });
 	      socket.on('channel-join', this.handleChannelJoin);
+	      socket.on('channel-leave', this.handleChannelLeave);
 	      socket.on('channel-user-joined', this.handleUserJoin);
+	      socket.on('channel-user-left', this.handleUserLeave);
 	      socket.on('channel-user-disconnected', this.handleUserDisconnect);
 	      socket.on('disconnect', this.handleDisconnect);
 	    }
@@ -22442,6 +22445,11 @@
 	    key: 'handleUserDisconnect',
 	    value: function handleUserDisconnect(data) {
 	      this.addStatusMessage(this.state.users[data.user].nick + ' has disconnected', data.channel, new Date(data.date));
+	    }
+	  }, {
+	    key: 'handleUserLeave',
+	    value: function handleUserLeave(data) {
+	      this.addStatusMessage(this.state.users[data.user].nick + ' has left the channel', data.channel, new Date(data.date));
 	    }
 	  }, {
 	    key: 'handleIncomingMessage',
@@ -22511,6 +22519,17 @@
 	      this.setState({ messages: currentMessages, currentChannel: data.id, channels: channels });
 	
 	      this.addStatusMessage('Welcome to the channel!', data.id, Date.now());
+	    }
+	  }, {
+	    key: 'handleChannelLeave',
+	    value: function handleChannelLeave(data) {
+	      var channels = this.state.channels;
+	      delete channels[data.channel];
+	
+	      var messages = this.state.messages;
+	      delete messages[data.channel];
+	
+	      this.setState({ channels: channels, messages: messages, currentChannel: 0 });
 	    }
 	  }, {
 	    key: 'handleMessageField',

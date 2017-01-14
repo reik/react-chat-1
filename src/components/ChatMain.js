@@ -29,12 +29,13 @@ export default class ChatMain extends React.Component {
     this.handleIncomingMessage = this.handleIncomingMessage.bind(this);
     this.changeChannel = this.changeChannel.bind(this);
     this.handleChannelJoin = this.handleChannelJoin.bind(this);
+    this.handleChannelLeave = this.handleChannelLeave.bind(this);
     this.addStatusMessage = this.addStatusMessage.bind(this);
     this.addNormalMessage = this.addNormalMessage.bind(this);
     this.handleDisconnect = this.handleDisconnect.bind(this);
     this.handleUserJoin = this.handleUserJoin.bind(this);
+    this.handleUserLeave = this.handleUserLeave.bind(this);
     this.handleUserDisconnect = this.handleUserDisconnect.bind(this);
-
   }
 
   componentDidMount() {
@@ -43,7 +44,9 @@ export default class ChatMain extends React.Component {
     socket.on('nickname-ok', () => { this.setState({ requestingNickname: false }) });
     socket.on('update-users', (data) => { this.setState({ users: data }) });
     socket.on('channel-join', this.handleChannelJoin);
+    socket.on('channel-leave', this.handleChannelLeave);
     socket.on('channel-user-joined', this.handleUserJoin);
+    socket.on('channel-user-left', this.handleUserLeave);
     socket.on('channel-user-disconnected', this.handleUserDisconnect)
     socket.on('disconnect', this.handleDisconnect);
   }
@@ -54,6 +57,10 @@ export default class ChatMain extends React.Component {
 
   handleUserDisconnect(data) {
     this.addStatusMessage(this.state.users[data.user].nick + ' has disconnected', data.channel, new Date(data.date));
+  }
+
+  handleUserLeave(data) {
+    this.addStatusMessage(this.state.users[data.user].nick + ' has left the channel', data.channel, new Date(data.date));
   }
 
   handleIncomingMessage(data) {
@@ -116,6 +123,16 @@ export default class ChatMain extends React.Component {
     this.setState({ messages: currentMessages, currentChannel: data.id, channels: channels });
 
     this.addStatusMessage('Welcome to the channel!', data.id, Date.now());
+  }
+
+  handleChannelLeave(data) {
+    var channels = this.state.channels;
+    delete channels[data.channel];
+
+    var messages = this.state.messages;
+    delete messages[data.channel];
+
+    this.setState({ channels: channels, messages: messages, currentChannel: 0 });
   }
 
   handleMessageField(value) {

@@ -160,7 +160,23 @@ io.on('connection', function(client){
             msg: 'Ehh, let\'s keep the status window open, okay?' 
           }, true));
         }else {
-          //implement leaving channel here
+          //Remove user from channel (Socket.io)
+          client.leave('channel-' + data.channel);
+
+          //Remove the channel from user's inform
+          users[client.id].channels.splice(users[client.id].channels.indexOf(data.channel), 1);
+
+          //Inform other channel members
+          io.to('channel-' + data.channel).emit('channel-user-left', {
+            user: client.id,
+            channel: data.channel,
+            date: Date.now()
+          });
+
+          //Leave confirmation for client
+          client.emit('channel-leave', {
+            channel: data.channel
+          });
         }
       }else {
         client.emit('new-message', message({
