@@ -65,7 +65,7 @@ io.on('connection', function(client){
   client.on('set-nickname', function(data) {
     changeNick(client, data);
 
-    //'You may now start chatting. If you\'re new here, type /help to get started.'
+    serverMessage(client, 'You may now start chatting. If you\'re new here, type /help to get started.');
   });
 
   //A message coming from client

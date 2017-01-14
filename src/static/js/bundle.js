@@ -22349,23 +22349,23 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Users = __webpack_require__(/*! ./Users */ 186);
+	var _Users = __webpack_require__(/*! ./Users */ 184);
 	
 	var _Users2 = _interopRequireDefault(_Users);
 	
-	var _Messages = __webpack_require__(/*! ./Messages */ 188);
+	var _Messages = __webpack_require__(/*! ./Messages */ 186);
 	
 	var _Messages2 = _interopRequireDefault(_Messages);
 	
-	var _MessageForm = __webpack_require__(/*! ./MessageForm */ 192);
+	var _MessageForm = __webpack_require__(/*! ./MessageForm */ 190);
 	
 	var _MessageForm2 = _interopRequireDefault(_MessageForm);
 	
-	var _Header = __webpack_require__(/*! ./Header */ 193);
+	var _Header = __webpack_require__(/*! ./Header */ 191);
 	
 	var _Header2 = _interopRequireDefault(_Header);
 	
-	var _Channels = __webpack_require__(/*! ./Channels */ 194);
+	var _Channels = __webpack_require__(/*! ./Channels */ 192);
 	
 	var _Channels2 = _interopRequireDefault(_Channels);
 	
@@ -22600,9 +22600,7 @@
 	exports.default = ChatMain;
 
 /***/ },
-/* 184 */,
-/* 185 */,
-/* 186 */
+/* 184 */
 /*!*********************************!*\
   !*** ./src/components/Users.js ***!
   \*********************************/
@@ -22620,7 +22618,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _User = __webpack_require__(/*! ./User */ 187);
+	var _User = __webpack_require__(/*! ./User */ 185);
 	
 	var _User2 = _interopRequireDefault(_User);
 	
@@ -22671,7 +22669,7 @@
 	exports.default = Users;
 
 /***/ },
-/* 187 */
+/* 185 */
 /*!********************************!*\
   !*** ./src/components/User.js ***!
   \********************************/
@@ -22723,7 +22721,7 @@
 	exports.default = User;
 
 /***/ },
-/* 188 */
+/* 186 */
 /*!************************************!*\
   !*** ./src/components/Messages.js ***!
   \************************************/
@@ -22745,11 +22743,11 @@
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _Message = __webpack_require__(/*! ./Message */ 189);
+	var _Message = __webpack_require__(/*! ./Message */ 187);
 	
 	var _Message2 = _interopRequireDefault(_Message);
 	
-	var _StatusMessage = __webpack_require__(/*! ./StatusMessage */ 191);
+	var _StatusMessage = __webpack_require__(/*! ./StatusMessage */ 189);
 	
 	var _StatusMessage2 = _interopRequireDefault(_StatusMessage);
 	
@@ -22811,7 +22809,7 @@
 	exports.default = Messages;
 
 /***/ },
-/* 189 */
+/* 187 */
 /*!***********************************!*\
   !*** ./src/components/Message.js ***!
   \***********************************/
@@ -22829,7 +22827,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _dateformat = __webpack_require__(/*! dateformat */ 190);
+	var _dateformat = __webpack_require__(/*! dateformat */ 188);
 	
 	var _dateformat2 = _interopRequireDefault(_dateformat);
 	
@@ -22872,7 +22870,7 @@
 	exports.default = Message;
 
 /***/ },
-/* 190 */
+/* 188 */
 /*!****************************************!*\
   !*** ./~/dateformat/lib/dateformat.js ***!
   \****************************************/
@@ -23107,7 +23105,7 @@
 
 
 /***/ },
-/* 191 */
+/* 189 */
 /*!*****************************************!*\
   !*** ./src/components/StatusMessage.js ***!
   \*****************************************/
@@ -23125,7 +23123,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _dateformat = __webpack_require__(/*! dateformat */ 190);
+	var _dateformat = __webpack_require__(/*! dateformat */ 188);
 	
 	var _dateformat2 = _interopRequireDefault(_dateformat);
 	
@@ -23166,7 +23164,7 @@
 	exports.default = StatusMessage;
 
 /***/ },
-/* 192 */
+/* 190 */
 /*!***************************************!*\
   !*** ./src/components/MessageForm.js ***!
   \***************************************/
@@ -23241,7 +23239,7 @@
 	exports.default = MessageForm;
 
 /***/ },
-/* 193 */
+/* 191 */
 /*!**********************************!*\
   !*** ./src/components/Header.js ***!
   \**********************************/
@@ -23293,7 +23291,7 @@
 	exports.default = Header;
 
 /***/ },
-/* 194 */
+/* 192 */
 /*!************************************!*\
   !*** ./src/components/Channels.js ***!
   \************************************/
@@ -23311,7 +23309,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Channel = __webpack_require__(/*! ./Channel */ 195);
+	var _Channel = __webpack_require__(/*! ./Channel */ 193);
 	
 	var _Channel2 = _interopRequireDefault(_Channel);
 	
@@ -23362,7 +23360,7 @@
 	exports.default = Channels;
 
 /***/ },
-/* 195 */
+/* 193 */
 /*!***********************************!*\
   !*** ./src/components/Channel.js ***!
   \***********************************/
