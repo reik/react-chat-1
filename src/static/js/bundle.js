@@ -22439,7 +22439,7 @@
 	  }, {
 	    key: 'handleUserJoin',
 	    value: function handleUserJoin(data) {
-	      this.addStatusMessage(this.state.users[data.user].nick + ' joined the channel', data.channel, new Date(data.date));
+	      this.addStatusMessage(this.state.users[data.user].nick + ' has joined the channel', data.channel, new Date(data.date));
 	    }
 	  }, {
 	    key: 'handleUserDisconnect',
@@ -22510,7 +22510,7 @@
 	      var currentMessages = this.state.messages;
 	      currentMessages[data.id] = [];
 	
-	      this.addStatusMessage('Welcome to channel!', data.id, Date.now());
+	      this.addStatusMessage('Welcome to the channel!', data.id, Date.now());
 	
 	      this.setState({ messages: currentMessages, currentChannel: data.id });
 	    }

@@ -108,11 +108,16 @@ io.on('connection', function(client){
       var split = data.msg.split(' ');
       var command = split[0].substring(1);
 
+      /*
+       *
+       * JOIN COMMAND
+       *
+       */
       if (command == 'join') {
         if (split.length < 2 || split[1].charAt(0) != '#') {
           client.emit('new-message', message({
             type: 0,
-            msg: ['Wrong syntax! Usage: /join #channel']
+            msg: 'Wrong syntax! Usage: /join #channel'
           }, true));
         }else {
           var channelID = getChannel(split[1]);
@@ -141,6 +146,21 @@ io.on('connection', function(client){
             //Remember the channel
             users[client.id].channels.push(channelID);
           }
+        }
+      
+      /*
+       *
+       * LEAVE COMMAND
+       * 
+       */
+      }else if (command == 'leave') {
+        if (data.channel == 0) {
+          client.emit('new-message', message({
+            type: 0,
+            msg: 'Ehh, let\'s keep the status window open, okay?' 
+          }, true));
+        }else {
+          //implement leaving channel here
         }
       }else {
         client.emit('new-message', message({
