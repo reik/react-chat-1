@@ -49,10 +49,7 @@ io.on('connection', function(client){
   console.log('-!- client (ID: '+ client.id +') connected, requesting nickname');
 
   //welcome the user and tell him what's up
-  client.emit('new-message', message({
-    type: 0,
-    msg: ['Connected to server', 'Welcome! Who are you? Please enter a nickname :-)']
-  }, true));
+  serverMessage(client, ['Connected to server', 'Welcome! Who are you? Please enter a nickname :-)']);
 
   //send username request
   client.emit('request-nickname');
@@ -66,37 +63,9 @@ io.on('connection', function(client){
 
   //Client requests nickname
   client.on('set-nickname', function(data) {
-    var nicknameCheck = nicknameValid(data);
+    changeNick(client, data);
 
-    //check if username is valid 
-    if (nicknameCheck == -1) {
-      console.log('-!- client (ID: ' + client.id + ') requested a nickname that is already in use: ' + data)
-
-      client.emit('new-message', message({
-        type: 0,
-        msg: 'That nickname is already in use. Please try another one!'
-      }, true));
-    }else if (nicknameCheck == -2) {
-      console.log('-!- client (ID: ' + client.id + ') requested invalid nickname ' + data)
-
-      client.emit('new-message', message({
-        type: 0,
-        msg: 'Invalid nickname. Nickname must be between 3 and 20 characters, and allowed characters are a-z, A-Z, 0-9 and _'
-      }, true));
-    }else {
-      users[client.id].nick = data;
-
-      console.log('-!- client (ID: ' + client.id + ') changed nickname to ' + data);
-
-      client.emit('new-message', message({
-        type: 0,
-        msg: ['You\'re now known as ' + data, 'You may now start chatting. If you\'re new here, type /help to get started.']
-      }, true));
-
-      client.emit('nickname-ok');
-      
-      io.emit('update-users', users);
-    }
+    //'You may now start chatting. If you\'re new here, type /help to get started.'
   });
 
   //A message coming from client
@@ -111,25 +80,30 @@ io.on('connection', function(client){
       var split = data.msg.split(' ');
       var command = split[0].substring(1).toLowerCase();
 
+      if (command == 'nick') {
+        if (split.length < 2) {
+          serverMessage(client, 'Wrong syntax! Usage: /nick newnick');
+
+          users[client.id].channels.forEach((channelID) => {
+            //io.emit('new-message')
+          });
+        }else {
+          changeNick(client, split[1]);
+        }
+
       /*
        *
        * JOIN COMMAND
        *
        */
-      if (command == 'join') {
+      }else if (command == 'join') {
         if (split.length < 2 || split[1].charAt(0) != '#') {
-          client.emit('new-message', message({
-            type: 0,
-            msg: 'Wrong syntax! Usage: /join #channel'
-          }, true));
+          serverMessage(client, 'Wrong syntax! Usage: /join #channel (Notice: channel names must begin with #)');
         }else {
           var channelID = getChannel(split[1]);
 
           if (users[client.id].channels.indexOf(channelID) > -1) {
-            client.emit('new-message', message({
-              type: 0,
-              msg: 'You\'re already on channel ' + split[1]
-            }, true));
+            serverMessage(client, 'You\'re already on channel ' + split[1]);
           }else {
             //Tell channel id and name to user
             client.emit('channel-join', {
@@ -158,10 +132,7 @@ io.on('connection', function(client){
        */
       }else if (command == 'leave') {
         if (data.channel == 0) {
-          client.emit('new-message', message({
-            type: 0,
-            msg: 'Ehh, let\'s keep the status window open, okay?' 
-          }, true));
+          serverMessage(client, 'Ehh, let\'s keep the status window open, okay?');
         }else {
           //Remove user from channel (Socket.io)
           client.leave('channel-' + data.channel);
@@ -181,11 +152,22 @@ io.on('connection', function(client){
             channel: data.channel
           });
         }
+      
+      /*
+       *
+       * HELP COMMAND
+       * 
+       */
+      }else if (command == 'help') {
+        serverMessage(client, ['Current commands:', '  /help - displays this help message', '  /join #channel - joins the specified channel', '  /leave - leaves the currently opened channel', '  /nick newnick - changes nickname to newnick']);
+
+      /*
+       *
+       * INVALID COMMAND
+       * 
+       */
       }else {
-        client.emit('new-message', message({
-          type: 0,
-          msg: ['Unknown command: ' + command]
-        }, true));
+        serverMessage(client, 'Unknown command: ' + command);
       }
     }else {
       if (data.channel != 0) {
@@ -218,16 +200,53 @@ io.on('connection', function(client){
 
 });
 
+
+function changeNick(client, nick) {
+  var nicknameCheck = nicknameValid(nick);
+
+  //check if username is valid 
+  if (nicknameCheck == -1) {
+    console.log('-!- client (ID: ' + client.id + ') requested a nickname that is already in use: ' + nick)
+
+    serverMessage(client, 'That nickname is already in use. Please try another one!');
+  }else if (nicknameCheck == -2) {
+    console.log('-!- client (ID: ' + client.id + ') requested invalid nickname ' + nick)
+
+    serverMessage(client, 'Invalid nickname. Nickname must be between 3 and 20 characters, and allowed characters are a-z, A-Z, 0-9 and _');
+  }else {
+    users[client.id].nick = nick;
+
+    console.log('-!- client (ID: ' + client.id + ') changed nickname to ' + nick);
+
+    serverMessage(client, 'You\'re now known as ' + nick);
+
+    client.emit('nickname-ok');
+    
+    io.emit('update-users', users);
+  }
+}
+
 //helper function for messages
-function message(data, isServerMessage) {
+function message(data) {
   data['date'] = Date.now();
 
-  if (!isServerMessage) {
-    data['id'] = messageCounter;
-    messageCounter = messageCounter + 1;
-  }
+  data['id'] = messageCounter;
+  messageCounter = messageCounter + 1;
+
   return data;
 }
+
+//reducing copy-paste
+function serverMessage(client, message) {
+  msg = {
+    type: 0,
+    msg: message,
+    date: Date.now()
+  }
+
+  client.emit('new-message', msg);
+}
+
 
 //helper function for finding channels with name
 function getChannel(name) {
