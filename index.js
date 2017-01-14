@@ -57,23 +57,33 @@ io.on('connection', function(client){
   //send username request
   client.emit('request-nickname');
 
+
   /*
    *
    * Sockets coming from clients
    * 
    */
 
+  //Client requests nickname
   client.on('set-nickname', function(data) {
-    var usernameRegex = /^[a-zA-Z0-9_]+$/;
-    
-    /*
-     
-     !!!!!! TODO: DON'T ALLOW DUPLICATE OR TOO LONG NICKNAMES !!!!!!!!
+    var nicknameCheck = nicknameValid(data);
 
-     */
-    
     //check if username is valid 
-    if (data.match(usernameRegex)) {
+    if (nicknameCheck == -1) {
+      console.log('-!- client (ID: ' + client.id + ') requested a nickname that is already in use: ' + data)
+
+      client.emit('new-message', message({
+        type: 0,
+        msg: 'That nickname is already in use. Please try another one!'
+      }, true));
+    }else if (nicknameCheck == -2) {
+      console.log('-!- client (ID: ' + client.id + ') requested invalid nickname ' + data)
+
+      client.emit('new-message', message({
+        type: 0,
+        msg: 'Invalid nickname. Nickname must be between 3 and 20 characters, and allowed characters are a-z, A-Z, 0-9 and _'
+      }, true));
+    }else {
       users[client.id].nick = data;
 
       console.log('-!- client (ID: ' + client.id + ') changed nickname to ' + data);
@@ -86,17 +96,10 @@ io.on('connection', function(client){
       client.emit('nickname-ok');
       
       io.emit('update-users', users);
-    }else {
-      console.log('-!- client (ID: ' + client.id + ') requested invalid nickname ' + data)
-
-      client.emit('new-message', message({
-        type: 0,
-        msg: ['Invalid nickname. Allowed characters: a-z, A-Z and _']
-      }, true));
     }
   });
 
-  //Message from client
+  //A message coming from client
   client.on('new-message', function(data) {
     var user = users[client.id];
     var channel = channels[data.channel];
@@ -106,7 +109,7 @@ io.on('connection', function(client){
     //it's command!
     if (data.msg.charAt(0) == '/') {
       var split = data.msg.split(' ');
-      var command = split[0].substring(1);
+      var command = split[0].substring(1).toLowerCase();
 
       /*
        *
@@ -253,6 +256,31 @@ function getChannel(name) {
 
     return channelCounter-1;
   }
+}
+
+//helper function to check if nick is valid. -1 = already in use, -2 = invalid, 1 = ok!
+function nicknameValid(nickname) {
+  var found = false;
+
+  Object.keys(users).forEach((userID) => {
+    var used_nickname = users[userID].nick;
+
+    if (used_nickname != null && used_nickname.toLowerCase() == nickname.toLowerCase()) {
+      found = true;
+    }
+  });
+
+  if (found) {
+    return -1;
+  }
+
+  var nicknameRegex = /^[a-zA-Z0-9_]+$/;
+
+  if (nickname.match(nicknameRegex) && nickname.length > 2 && nickname.length <= 20) {
+    return 1;
+  }
+
+  return -2
 }
 
 /*
