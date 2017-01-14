@@ -117,7 +117,7 @@ io.on('connection', function(client){
         }else {
           var channelID = getChannel(split[1]);
 
-          if (users[client.id].channels.indexOf('channel-' + channelID) > -1) {
+          if (users[client.id].channels.indexOf(channelID) > -1) {
             client.emit('new-message', message({
               type: 0,
               msg: 'You\'re already on channel ' + split[1]
@@ -139,7 +139,7 @@ io.on('connection', function(client){
             client.join('channel-' + channelID);
 
             //Remember the channel
-            users[client.id].channels.push('channel-' + channelID);
+            users[client.id].channels.push(channelID);
           }
         }
       }else {
@@ -163,6 +163,16 @@ io.on('connection', function(client){
 
   //Client disconnected
   client.on('disconnect', function() {
+    //inform channels that the user has disconnected
+    users[client.id].channels.forEach((channel) => {
+      io.to('channel-' + channel).emit('channel-user-disconnected', {
+        user: client.id,
+        channel: channel,
+        date: Date.now()
+      });
+    });
+
+    //delete client from users list and send remaining clients the updated list
     delete users[client.id];
     io.emit('update-users', users);
   });
@@ -184,7 +194,7 @@ function message(data, isServerMessage) {
 function getChannel(name) {
   var channelID = null;
 
-  Object.keys(channels).forEach(function(key) {
+  Object.keys(channels).forEach((key) => {
     var channelName = channels[key].name;
 
     if (channelName.toLowerCase() == name.toLowerCase()) {
@@ -244,6 +254,14 @@ USER JOIN FORMAT
   channel: 1,
   user: 4,
   date: 4832842
+}
+
+USER DISCONNECT FORMAT
+
+{
+  user: 2,
+  channel: 0,
+  date: 4824732
 }
 
 */
