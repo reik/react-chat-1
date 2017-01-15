@@ -63,9 +63,9 @@ io.on('connection', function(client){
 
   //Client requests nickname
   client.on('set-nickname', function(data) {
-    changeNick(client, data);
-
-    serverMessage(client, 'You may now start chatting. If you\'re new here, type /help to get started.');
+    if (changeNick(client, data)) {
+      serverMessage(client, 'You may now start chatting. If you\'re new here, type /help to get started.');
+    }
   });
 
   //A message coming from client
@@ -209,10 +209,14 @@ function changeNick(client, nick) {
     console.log('-!- client (ID: ' + client.id + ') requested a nickname that is already in use: ' + nick)
 
     serverMessage(client, 'That nickname is already in use. Please try another one!');
+
+    return false;
   }else if (nicknameCheck == -2) {
     console.log('-!- client (ID: ' + client.id + ') requested invalid nickname ' + nick)
 
     serverMessage(client, 'Invalid nickname. Nickname must be between 3 and 20 characters, and allowed characters are a-z, A-Z, 0-9 and _');
+
+    return false;
   }else {
     users[client.id].nick = nick;
 
@@ -223,6 +227,8 @@ function changeNick(client, nick) {
     client.emit('nickname-ok');
     
     io.emit('update-users', users);
+
+    return true;
   }
 }
 

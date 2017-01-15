@@ -25,6 +25,9 @@ export default class ChatMain extends React.Component {
       statusMessageIDCounter: 0
     }
     
+    //socket will be initialized in this variable
+    this.socket = null;
+
     this.handleMessageField = this.handleMessageField.bind(this);
     this.handleIncomingMessage = this.handleIncomingMessage.bind(this);
     this.changeChannel = this.changeChannel.bind(this);
@@ -39,16 +42,18 @@ export default class ChatMain extends React.Component {
   }
 
   componentDidMount() {
-    socket.on('new-message', this.handleIncomingMessage);
-    socket.on('request-nickname', () => { this.setState({ requestingNickname: true }) });
-    socket.on('nickname-ok', () => { this.setState({ requestingNickname: false }) });
-    socket.on('update-users', (data) => { this.setState({ users: data }) });
-    socket.on('channel-join', this.handleChannelJoin);
-    socket.on('channel-leave', this.handleChannelLeave);
-    socket.on('channel-user-joined', this.handleUserJoin);
-    socket.on('channel-user-left', this.handleUserLeave);
-    socket.on('channel-user-disconnected', this.handleUserDisconnect)
-    socket.on('disconnect', this.handleDisconnect);
+    this.socket = io();
+
+    this.socket.on('new-message', this.handleIncomingMessage);
+    this.socket.on('request-nickname', () => { this.setState({ requestingNickname: true }) });
+    this.socket.on('nickname-ok', () => { this.setState({ requestingNickname: false }) });
+    this.socket.on('update-users', (data) => { this.setState({ users: data }) });
+    this.socket.on('channel-join', this.handleChannelJoin);
+    this.socket.on('channel-leave', this.handleChannelLeave);
+    this.socket.on('channel-user-joined', this.handleUserJoin);
+    this.socket.on('channel-user-left', this.handleUserLeave);
+    this.socket.on('channel-user-disconnected', this.handleUserDisconnect)
+    this.socket.on('disconnect', this.handleDisconnect);
   }
 
   handleUserJoin(data) {
@@ -138,9 +143,9 @@ export default class ChatMain extends React.Component {
   handleMessageField(value) {
     //if in nickname request mode, send set-nickname packet. Else send a message to current channel.
     if (this.state.requestingNickname) {
-      socket.emit('set-nickname', value);
+      this.socket.emit('set-nickname', value);
     }else {
-      socket.emit('new-message', {
+      this.socket.emit('new-message', {
         channel: this.state.currentChannel,
         msg: value
       });
