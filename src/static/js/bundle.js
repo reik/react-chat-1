@@ -22414,6 +22414,7 @@
 	    _this.handleUserJoin = _this.handleUserJoin.bind(_this);
 	    _this.handleUserLeave = _this.handleUserLeave.bind(_this);
 	    _this.handleUserDisconnect = _this.handleUserDisconnect.bind(_this);
+	    _this.handleUserNickChange = _this.handleUserNickChange.bind(_this);
 	    return _this;
 	  }
 	
@@ -22436,6 +22437,7 @@
 	      });
 	      this.socket.on('channel-join', this.handleChannelJoin);
 	      this.socket.on('channel-leave', this.handleChannelLeave);
+	      this.socket.on('channel-user-changed-nick', this.handleUserNickChange);
 	      this.socket.on('channel-user-joined', this.handleUserJoin);
 	      this.socket.on('channel-user-left', this.handleUserLeave);
 	      this.socket.on('channel-user-disconnected', this.handleUserDisconnect);
@@ -22455,6 +22457,11 @@
 	    key: 'handleUserLeave',
 	    value: function handleUserLeave(data) {
 	      this.addStatusMessage(this.state.users[data.user].nick + ' has left the channel', data.channel, new Date(data.date));
+	    }
+	  }, {
+	    key: 'handleUserNickChange',
+	    value: function handleUserNickChange(data) {
+	      this.addStatusMessage(data.oldNick + ' is now known as ' + data.newNick, data.channel, new Date(data.date));
 	    }
 	  }, {
 	    key: 'handleIncomingMessage',

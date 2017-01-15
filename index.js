@@ -83,12 +83,20 @@ io.on('connection', function(client){
       if (command == 'nick') {
         if (split.length < 2) {
           serverMessage(client, 'Wrong syntax! Usage: /nick newnick');
-
-          users[client.id].channels.forEach((channelID) => {
-            //io.emit('new-message')
-          });
         }else {
-          changeNick(client, split[1]);
+          var oldNick = users[client.id].nick;
+
+          if (changeNick(client, split[1])) {
+            //inform user's channels about nick change
+            users[client.id].channels.forEach((channelID) => {
+              io.emit('channel-user-changed-nick', {
+                channel: channelID,
+                oldNick: oldNick,
+                newNick: users[client.id].nick,
+                date: Date.now()
+              });
+            });
+          }
         }
 
       /*
