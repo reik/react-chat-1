@@ -179,7 +179,8 @@ io.on('connection', function(client){
       }
     }else {
       if (data.channel != 0) {
-        io.to('channel-' + data.channel).emit('new-message', message({
+//        io.to('channel-' + data.channel).emit('new-message', message({
+        io.emit('new-message', message({
           type: 1,
           sender: client.id,
           msg: data.msg,
